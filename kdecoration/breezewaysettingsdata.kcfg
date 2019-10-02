@@ -73,11 +73,11 @@
       <choices>
           <choice name="ButtonTiny" />
           <choice name="ButtonSmall" />
-          <choice name="ButtonDefault" />
+          <choice name="ButtonNormal" />
           <choice name="ButtonLarge" />
           <choice name="ButtonVeryLarge" />
       </choices>
-      <default>ButtonDefault</default>
+      <default>ButtonSmall</default>
     </entry>
 
     <!-- maximized windows -->

@@ -174,7 +174,7 @@ namespace Breezeway
         if( backgroundColor.isValid() )
         {
             painter->setPen( Qt::NoPen );
-            painter->setBrush( backgroundColor.lighter(90) );
+            painter->setBrush( backgroundColor.lighter(85) );
             painter->drawEllipse( QRectF( 0, 0, 18, 18 ) );
             painter->setBrush( backgroundColor );
             painter->drawEllipse( QRectF( 1, 1, 16, 16 ) );
@@ -189,7 +189,7 @@ namespace Breezeway
             QPen pen( foregroundColor );
             pen.setCapStyle( Qt::RoundCap );
             pen.setJoinStyle( Qt::MiterJoin );
-            pen.setWidthF( 1.1*qMax((qreal)1.0, 20/width ) );
+            pen.setWidthF( 1.3*qMax((qreal)1.0, 20/width ) );
 
             painter->setPen( pen );
             painter->setBrush( Qt::NoBrush );
@@ -199,7 +199,7 @@ namespace Breezeway
 
                 case DecorationButtonType::Close:
                 {
-                    painter->drawLine( QPointF( 5, 5 ), QPointF( 13, 13 ) );
+                    painter->drawLine( 5, 5, 13, 13 );
                     painter->drawLine( 13, 5, 5, 13 );
                     break;
                 }
@@ -208,30 +208,30 @@ namespace Breezeway
                 {
                     if( isChecked() )
                     {
-                        pen.setJoinStyle( Qt::RoundJoin );
-                        painter->setPen( pen );
-
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 4, 9 ),
-                            QPointF( 9, 4 ),
-                            QPointF( 14, 9 ),
-                            QPointF( 9, 14 )} );
-
-                    } else {
-                        painter->drawPolyline( QVector<QPointF>{
+                            QPointF( 11, 4 ),
+                            QPointF( 11, 7 ),
+                            QPointF( 14, 7 )} );
+                        painter->drawPolygon( QVector<QPointF>{
                             QPointF( 4, 11 ),
-                            QPointF( 9, 6 ),
-                            QPointF( 14, 11 )});
+                            QPointF( 7, 11 ),
+                            QPointF( 7, 14 )} );
+                    } else {
+                        painter->drawPolygon( QVector<QPointF>{
+                            QPointF( 10, 5 ),
+                            QPointF( 13, 5 ),
+                            QPointF( 13, 8 )} );
+                        painter->drawPolygon( QVector<QPointF>{
+                            QPointF( 8, 13 ),
+                            QPointF( 5, 13 ),
+                            QPointF( 5, 10 )} );
                     }
                     break;
                 }
 
                 case DecorationButtonType::Minimize:
                 {
-                    painter->drawPolyline( QVector<QPointF>{
-                        QPointF( 4, 7 ),
-                        QPointF( 9, 12 ),
-                        QPointF( 14, 7 ) });
+                    painter->drawLine( 4, 9, 14, 9 );
                     break;
                 }
 
@@ -368,10 +368,6 @@ namespace Breezeway
         } else if( isPressed() ) {
 
             return QColor(colorSymbol);
-
-        } else if( type() == DecorationButtonType::Close && d->internalSettings()->outlineCloseButton() ) {
-
-            return d->titleBarColor();
 
         } else if( ( type() == DecorationButtonType::KeepBelow || type() == DecorationButtonType::KeepAbove || type() == DecorationButtonType::Shade ) && isChecked() ) {
 
