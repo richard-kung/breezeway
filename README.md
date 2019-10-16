@@ -9,7 +9,7 @@ Not many features at this moment.
 ## Build
     mkdir build
     cd build
-    cmake ..
+    cmake -DCMAKE_INSTALL_PREFIX=/usr ..
     make
     sudo make install
 
