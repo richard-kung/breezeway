@@ -104,24 +104,24 @@ namespace
         CompositeShadowParams(),
         // Small
         CompositeShadowParams(
-            QPoint(0, 6),
+            QPoint(0, 12),
             ShadowParams(QPoint(0, 0), 16, 1),
-            ShadowParams(QPoint(0, -3), 8, 0.4)),
+            ShadowParams(QPoint(0, -6), 8, 0.4)),
         // Medium
         CompositeShadowParams(
-            QPoint(0, 12),
+            QPoint(0, 16),
             ShadowParams(QPoint(0, 0), 32, 0.9),
-            ShadowParams(QPoint(0, -6), 16, 0.3)),
+            ShadowParams(QPoint(0, -8), 16, 0.3)),
         // Large
         CompositeShadowParams(
-            QPoint(0, 18),
+            QPoint(0, 24),
             ShadowParams(QPoint(0, 0), 48, 0.8),
-            ShadowParams(QPoint(0, -9), 24, 0.2)),
+            ShadowParams(QPoint(0, -12), 24, 0.2)),
         // Very large
         CompositeShadowParams(
-            QPoint(0, 24),
+            QPoint(0, 48),
             ShadowParams(QPoint(0, 0), 64, 0.7),
-            ShadowParams(QPoint(0, -12), 32, 0.1)),
+            ShadowParams(QPoint(0, -24), 32, 0.1)),
     };
 
     inline CompositeShadowParams lookupShadowParams(int size)
@@ -155,7 +155,8 @@ namespace Breezeway
     static int g_shadowSizeEnum = InternalSettings::ShadowLarge;
     static int g_shadowStrength = 255;
     static QColor g_shadowColor = Qt::black;
-    static QSharedPointer<KDecoration2::DecorationShadow> g_sShadow;
+    static QSharedPointer<KDecoration2::DecorationShadow> g_sActiveShadow;
+    static QSharedPointer<KDecoration2::DecorationShadow> g_sInactiveShadow;
 
     //________________________________________________________________
     Decoration::Decoration(QObject *parent, const QVariantList &args)
@@ -171,7 +172,8 @@ namespace Breezeway
         g_sDecoCount--;
         if (g_sDecoCount == 0) {
             // last deco destroyed, clean up shadow
-            g_sShadow.clear();
+            g_sActiveShadow.clear();
+            g_sInactiveShadow.clear();
         }
 
         deleteSizeGrip();
@@ -286,6 +288,8 @@ namespace Breezeway
         connect(c, &KDecoration2::DecoratedClient::maximizedChanged, this, &Decoration::updateButtonsGeometry);
         connect(c, &KDecoration2::DecoratedClient::adjacentScreenEdgesChanged, this, &Decoration::updateButtonsGeometry);
         connect(c, &KDecoration2::DecoratedClient::shadedChanged, this, &Decoration::updateButtonsGeometry);
+ 
+        connect(c, &KDecoration2::DecoratedClient::activeChanged, this, &Decoration::createShadow);
 
         createButtons();
         createShadow();
@@ -709,7 +713,14 @@ namespace Breezeway
     //________________________________________________________________
     void Decoration::createShadow()
     {
-        if (!g_sShadow
+        QSharedPointer<KDecoration2::DecorationShadow> sShadow;
+        auto c = client().data();
+        if ( c->isActive() ) {
+            sShadow = g_sActiveShadow;
+        } else {
+            sShadow = g_sInactiveShadow;
+        }
+        if (!sShadow
                 ||g_shadowSizeEnum != m_internalSettings->shadowSize()
                 || g_shadowStrength != m_internalSettings->shadowStrength()
                 || g_shadowColor != m_internalSettings->shadowColor())
@@ -720,8 +731,8 @@ namespace Breezeway
 
             const CompositeShadowParams params = lookupShadowParams(g_shadowSizeEnum);
             if (params.isNone()) {
-                g_sShadow.clear();
-                setShadow(g_sShadow);
+                sShadow.clear();
+                setShadow(sShadow);
                 return;
             }
 
@@ -739,7 +750,10 @@ namespace Breezeway
             shadowRenderer.setBoxSize(boxSize);
             shadowRenderer.setDevicePixelRatio(1.0); // TODO: Create HiDPI shadows?
 
-            const qreal strength = static_cast<qreal>(g_shadowStrength) / 255.0;
+            qreal strength = static_cast<qreal>(g_shadowStrength) / 255.0;
+            if ( !c->isActive() ) {
+                strength /= 2;
+            }
             shadowRenderer.addShadow(params.shadow1.offset, params.shadow1.radius,
                 withOpacity(g_shadowColor, params.shadow1.opacity * strength));
             shadowRenderer.addShadow(params.shadow2.offset, params.shadow2.radius,
@@ -782,13 +796,13 @@ namespace Breezeway
 
             painter.end();
 
-            g_sShadow = QSharedPointer<KDecoration2::DecorationShadow>::create();
-            g_sShadow->setPadding(padding);
-            g_sShadow->setInnerShadowRect(QRect(outerRect.center(), QSize(1, 1)));
-            g_sShadow->setShadow(shadowTexture);
+            sShadow = QSharedPointer<KDecoration2::DecorationShadow>::create();
+            sShadow->setPadding(padding);
+            sShadow->setInnerShadowRect(QRect(outerRect.center(), QSize(1, 1)));
+            sShadow->setShadow(shadowTexture);
         }
 
-        setShadow(g_sShadow);
+        setShadow(sShadow);
     }
 
     //_________________________________________________________________

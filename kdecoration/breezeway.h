@@ -43,8 +43,8 @@ namespace Breezeway
         //* titlebar metrics, in units of small spacing
         TitleBar_TopMargin = 2,
         TitleBar_BottomMargin = 2,
-        TitleBar_SideMargin = 2,
-        TitleBar_ButtonSpacing = 2,
+        TitleBar_SideMargin = 3,
+        TitleBar_ButtonSpacing = 3,
 
         // shadow dimensions (pixels)
         Shadow_Overlap = 3,

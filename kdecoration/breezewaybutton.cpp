@@ -193,7 +193,7 @@ namespace Breezeway
             pen.setWidthF( 1.3*qMax((qreal)1.0, 20/width ) );
 
             painter->setPen( pen );
-            painter->setBrush( Qt::NoBrush );
+            painter->setBrush( foregroundColor );
 
             switch( type() )
             {
@@ -219,13 +219,13 @@ namespace Breezeway
                             QPointF( 7, 14 )} );
                     } else {
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 10, 5 ),
+                            QPointF( 8, 5 ),
                             QPointF( 13, 5 ),
-                            QPointF( 13, 8 )} );
+                            QPointF( 13, 10 )} );
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 8, 13 ),
+                            QPointF( 10, 13 ),
                             QPointF( 5, 13 ),
-                            QPointF( 5, 10 )} );
+                            QPointF( 5, 8 )} );
                     }
                     break;
                 }
