@@ -439,9 +439,13 @@ namespace Breezeway
         } else if ( !c->isActive() ) {
 
             QColor color;
-            // color.setRgb(inactiveColor);
             color = d->titleBarColor();
-            return color.lighter(85);
+            int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+            if(y > 128) {
+                return color.lighter(85);
+            } else {
+                return color.lighter(145);
+            }
 
         } else {
 
