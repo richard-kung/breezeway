@@ -640,12 +640,13 @@ namespace Breezeway
     int Decoration::buttonHeight() const
     {
         const int baseSize = settings()->gridUnit();
+        // baseSize is roughly 8 pixel
         switch( m_internalSettings->buttonSize() )
         {
             case InternalSettings::ButtonTiny: return baseSize;
             case InternalSettings::ButtonSmall: return baseSize*1.5;
             default:
-            case InternalSettings::ButtonNormal: return baseSize*2;
+            case InternalSettings::ButtonNormal: return baseSize*2-2;
             case InternalSettings::ButtonLarge: return baseSize*2.5;
             case InternalSettings::ButtonVeryLarge: return baseSize*3.5;
         }

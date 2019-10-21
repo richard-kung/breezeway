@@ -163,7 +163,7 @@
          </item>
          <item>
           <property name="text">
-           <string comment="@item:inlistbox Button size:">Medium</string>
+           <string comment="@item:inlistbox Button size:">Normal</string>
           </property>
          </item>
          <item>
