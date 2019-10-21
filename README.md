@@ -1,15 +1,55 @@
-# Breezeway
+# BreezewayMod
 ## About
-Breezeway is a Breeze window decoration fork that mimics macOS style.  
-Not many features at this moment.
+BreezewayMod is a fork of the Breezeway window decoration which aims to mimic the macOS interface. But with powerups.
+Did I mention that it comes without weird glitches on the rounded corners?
 
+## Screenshots
 ![](screenshot1.png)
 ![](screenshot2.png)
+Looks good with light and dark color schemes (shown here with color schemes "Arc" for light windows and "Arc-Dark" for dark windows)
 
-## Build
-    mkdir build
-    cd build
-    cmake -DCMAKE_INSTALL_PREFIX=/usr ..
-    make
-    sudo make install
+![](sierrabreeze.png)
+The usual glitch on dark themes.
 
+![](breezewaymod.png)
+Glitch-b-gone with Breezeway magick!
+
+## Build & Install
+Clone the repository to a directory of your choice:
+```
+git clone https://github.com/n4n0GH/breezeway-mod
+```
+Note: it is recommended to clone it somewhere where you can leave the built directory in case you want to uninstall the theme. If you accidentally deleted the directory, check below for how to uninstall manually.
+
+Next create a subfolder called build, change directory to that subfolder, run `cmake` in that subfolder, `make` and `make install`:
+```
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+make
+sudo make install
+```
+
+## Uninstall
+In the build directory use the following command to remove the theme:
+```
+sudo make uninstall
+```
+
+If you don't have this directory anymore, you need to manually delete the following files and folders:
+```
+/usr/lib64/cmake/BreezewayMod/BreezewayConfig.cmake
+/usr/lib64/cmake/BreezewayMod/BreezewayConfigVersion.cmake
+/usr/lib64/qt/plugins/org.kde.kdecoration2/breezewaydecoration.so
+/usr/share/kservices5/breezewaydecorationconfig.desktop
+/usr/lib64/libbreezewaycommon5.so.5.16.5
+/usr/lib64/libbreezewaycommon5.so.5
+```
+
+## FAQ
+> What's the biggest differences between this and Breezeway?
+
+Major difference is a larger default window border radius of 5 pixel instead of 3 as well as larger button spacing and margins to increase titlebar height just a bit.
+
+> What's planned for this fork?
+
+A major rehaul of the configuration editor (current build already looks different from Breezeway), as well as customizable settings. Some graphical things might change as well but that depends on whether or not I can warm up with QML and C++.

@@ -30,7 +30,7 @@ ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX BREEZEWAY
                   )
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/Breezeway")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/BreezewayMod")
 
 include(ECMPackageConfigHelpers)
 ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/BreezewayConfig.cmake.in"

@@ -1,11 +1,9 @@
 {
     "KPlugin": {
-        "Description": "Breezeway window decoration",
-        "Description[zh_TW]": "Breezeway 視窗裝飾",
+        "Description": "BreezewayMod window decoration",
         "EnabledByDefault": true,
-        "Id": "org.kde.breezeway",
-        "Name": "Breezeway",
-        "Name[zh_TW]": "Breezeway",
+        "Id": "org.kde.breezewaymod",
+        "Name": "BreezewayMod",
         "ServiceTypes": [
             "org.kde.kdecoration2"
         ]

@@ -1,0 +1,10 @@
+# QTCreator project files
+breezewaymod.cflags
+breezewaymod.config
+breezewaymod.creator
+breezewaymod.cxxflags
+breezewaymod.files
+breezewaymod.includes
+
+# build folder
+build/
