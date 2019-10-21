@@ -2,6 +2,7 @@
 breezewaymod.cflags
 breezewaymod.config
 breezewaymod.creator
+breezewaymod.creator.user
 breezewaymod.cxxflags
 breezewaymod.files
 breezewaymod.includes
