@@ -140,6 +140,7 @@ namespace Breezeway
         const QRgb colorMaximize = 0xFF13D13D;
         const QRgb colorMinimize = 0xFFFCBE07;
         const QRgb colorInactive = 0xFFC7C7C7;
+        const QRgb colorInactiveDark = 0xFF454a57;
         const QRgb colorSymbol = 0xFF505050;
         const QRgb colorOther = 0xFF4FBAF4;
     };
