@@ -4,8 +4,7 @@ BreezewayMod is a fork of the Breezeway window decoration which aims to mimic th
 Did I mention that it comes without weird glitches on the rounded corners?
 
 ## Screenshots
-![](screenshot1.png)
-![](screenshot2.png)
+![](screenshot.png)
 Looks good with light and dark color schemes (shown here with color schemes "Arc" for light windows and "Arc-Dark" for dark windows)
 
 ![](sierrabreeze.png)
