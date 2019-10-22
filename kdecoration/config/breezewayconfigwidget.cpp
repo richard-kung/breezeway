@@ -62,6 +62,7 @@ namespace Breezeway
         connect( m_ui.shadowSize, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
         connect( m_ui.shadowStrength, SIGNAL(valueChanged(int)), SLOT(updateChanged()) );
         connect( m_ui.shadowColor, SIGNAL(changed(QColor)), SLOT(updateChanged()) );
+        connect( m_ui.inactiveShadowBehaviour, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
 
         // track exception changes
         connect( m_ui.exceptions, SIGNAL(changed(bool)), SLOT(updateChanged()) );
@@ -94,6 +95,8 @@ namespace Breezeway
         m_ui.shadowStrength->setValue( qRound(qreal(m_internalSettings->shadowStrength()*100)/255 ) );
         m_ui.shadowColor->setColor( m_internalSettings->shadowColor() );
 
+        m_ui.inactiveShadowBehaviour->setCurrentIndex( m_internalSettings->inactiveShadowBehaviour() );
+
         // load exceptions
         ExceptionList exceptions;
         exceptions.readConfig( m_configuration );
@@ -124,6 +127,8 @@ namespace Breezeway
         m_internalSettings->setShadowSize( m_ui.shadowSize->currentIndex() );
         m_internalSettings->setShadowStrength( qRound( qreal(m_ui.shadowStrength->value()*255)/100 ) );
         m_internalSettings->setShadowColor( m_ui.shadowColor->color() );
+
+        m_internalSettings->setInactiveShadowBehaviour( m_ui.inactiveShadowBehaviour->currentIndex() );
 
         // save configuration
         m_internalSettings->save();
@@ -172,6 +177,8 @@ namespace Breezeway
         m_ui.shadowStrength->setValue( qRound(qreal(m_internalSettings->shadowStrength()*100)/255 ) );
         m_ui.shadowColor->setColor( m_internalSettings->shadowColor() );
 
+        m_ui.inactiveShadowBehaviour->setCurrentIndex( m_internalSettings->inactiveShadowBehaviour() );
+
     }
 
     //_______________________________________________
@@ -200,6 +207,7 @@ namespace Breezeway
         else if( m_ui.shadowSize->currentIndex() !=  m_internalSettings->shadowSize() ) modified = true;
         else if( qRound( qreal(m_ui.shadowStrength->value()*255)/100 ) != m_internalSettings->shadowStrength() ) modified = true;
         else if( m_ui.shadowColor->color() != m_internalSettings->shadowColor() ) modified = true;
+        else if( m_ui.inactiveShadowBehaviour->currentIndex() != m_internalSettings->inactiveShadowBehaviour() ) modified = true;
 
         // exceptions
         else if( m_ui.exceptions->isChanged() ) modified = true;

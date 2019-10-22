@@ -735,6 +735,7 @@ namespace Breezeway
             g_shadowStrength = m_internalSettings->shadowStrength();
             g_shadowColor = m_internalSettings->shadowColor();
 
+
             const CompositeShadowParams params = lookupShadowParams(g_shadowSizeEnum);
             if (params.isNone()) {
                 sShadow.clear();
@@ -758,7 +759,13 @@ namespace Breezeway
 
             qreal strength = static_cast<qreal>(g_shadowStrength) / 255.0;
             if ( !c->isActive() ) {
-                strength /= 2;
+                if(m_internalSettings->inactiveShadowBehaviour() == 0){
+                    strength /= 2;
+                } else if (m_internalSettings->inactiveShadowBehaviour() == 1){
+                    strength /= 4;
+                } else if (m_internalSettings->inactiveShadowBehaviour() == 2){
+                    strength = 0;
+                }
             }
             shadowRenderer.addShadow(params.shadow1.offset, params.shadow1.radius,
                 withOpacity(g_shadowColor, params.shadow1.opacity * strength));

@@ -28,6 +28,15 @@
        <default>0, 0, 0</default>
     </entry>
 
+    <entry name="InactiveShadowBehaviour" type = "Enum">
+      <choices>
+          <choice name="RegularShadows"/>
+          <choice name="LightShadows"/>
+          <choice name="NoShadows"/>
+      </choices>
+      <default>RegularShadows</default>
+    </entry>
+
     <!-- close button -->
     <entry name="OutlineCloseButton" type = "Bool">
         <default>true</default>
@@ -77,7 +86,7 @@
           <choice name="ButtonLarge" />
           <choice name="ButtonVeryLarge" />
       </choices>
-      <default>ButtonSmall</default>
+      <default>ButtonNormal</default>
     </entry>
 
     <!-- maximized windows -->
