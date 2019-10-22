@@ -582,9 +582,15 @@ namespace Breezeway
             gradient.setColorAt(0.8, titleBarColor);
             painter->setBrush(gradient);
 
+        // if user doesn't want a gradient, we paint a nice line on top
+        // while respecting the user's colorscheme
         } else {
-
-            painter->setBrush( titleBarColor() );
+            const QColor titleBarColor( this-> titleBarColor());
+            int y = 1/titleRect.height();
+            QLinearGradient gradient(0, 0, 0, titleRect.height());
+            gradient.setColorAt(0.0, titleBarColor.lighter(185));
+            gradient.setColorAt(0.03, titleBarColor);
+            painter->setBrush(gradient);
 
         }
 
