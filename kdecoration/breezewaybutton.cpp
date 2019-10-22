@@ -219,13 +219,13 @@ namespace Breezeway
                             QPointF( 7, 14 )} );
                     } else {
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 8, 5 ),
-                            QPointF( 13, 5 ),
-                            QPointF( 13, 10 )} );
+                            QPointF( 9, 6 ),
+                            QPointF( 12, 6 ),
+                            QPointF( 12, 9 )} );
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 10, 13 ),
-                            QPointF( 5, 13 ),
-                            QPointF( 5, 8 )} );
+                            QPointF( 9, 12 ),
+                            QPointF( 6, 12 ),
+                            QPointF( 6, 9 )} );
                     }
                     break;
                 }
