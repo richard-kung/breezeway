@@ -586,7 +586,6 @@ namespace Breezeway
         // while respecting the user's colorscheme
         } else {
             const QColor titleBarColor( this-> titleBarColor());
-            int y = 1/titleRect.height();
             QLinearGradient gradient(0, 0, 0, titleRect.height());
             gradient.setColorAt(0.0, titleBarColor.lighter(185));
             gradient.setColorAt(0.03, titleBarColor);
