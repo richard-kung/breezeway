@@ -13,6 +13,9 @@ The usual glitch on dark themes.
 ![](breezewaymod.png)
 Glitch-b-gone with Breezeway magick!
 
+![](low_contrast.png)
+If overlapping windows have not enough contrast between each other it's sometimes hard to see overlapping titlebars of you use a flat theme. Luckily, BreezewayMod comes with a neat highlight line across the top of your titlebar to get that sorted out!
+
 ## Build & Install
 Clone the repository to a directory of your choice:
 ```
