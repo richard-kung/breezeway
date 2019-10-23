@@ -193,7 +193,6 @@ namespace Breezeway
     //________________________________________________________________
     QColor Decoration::titleBarColor() const
     {
-
         auto c = client().data();
         if( hideTitleBar() ) return c->color( ColorGroup::Inactive, ColorRole::TitleBar );
         else if( m_animation->state() == QPropertyAnimation::Running )
@@ -209,16 +208,13 @@ namespace Breezeway
     //________________________________________________________________
     QColor Decoration::outlineColor() const
     {
-
+        // TODO: change color of seperator to look more macOS like
+        // probably best achieved with lighten(<100) to respect
+        // titlebar colors set by the user color scheme
         auto c( client().data() );
         if( !m_internalSettings->drawTitleBarSeparator() ) return QColor();
-        if( m_animation->state() == QPropertyAnimation::Running )
-        {
-            QColor color( c->palette().color( QPalette::Highlight ) );
-            color.setAlpha( color.alpha()*m_opacity );
-            return color;
-        } else if( c->isActive() ) return c->palette().color( QPalette::Highlight );
-        else return QColor();
+        if( c->isActive() ) return titleBarColor().lighter(70);
+        else return titleBarColor().lighter(85);
     }
 
     //________________________________________________________________
@@ -563,6 +559,12 @@ namespace Breezeway
 
     //________________________________________________________________
     void Decoration::paintTitleBar(QPainter *painter, const QRect &repaintRegion)
+    // TODO: implement "match window color" option
+    // found in SierraBreeze using this:
+    // const QColor matchedTitleBarColor(c->palette().color(QPalette::Window));
+    // NOTE: this will render GTK windows white, as
+    // GTK obv doesn't use QPalette so we need a hack
+    // for that to find the pixel closest somehow...
     {
         const auto c = client().data();
         const QRect titleRect(QPoint(0, 0), QSize(size().width(), borderTop()));
@@ -572,23 +574,29 @@ namespace Breezeway
         painter->save();
         painter->setPen(Qt::NoPen);
 
-        // render a linear gradient on title area
+        // render a linear gradient on titlebar
+        // including highlight area
         if( m_internalSettings->drawBackgroundGradient() )
         {
-            const int lightfactor = c->isActive()? 103: 102;
+            QColor color = titleBarColor();
+            int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+            const int lfv = y > 128? 110: 120;
+            const int gv = y > 128? 95: 90;
+            const int lightfactor = c->isActive()? lfv: 100;
             const QColor titleBarColor( this->titleBarColor() );
             QLinearGradient gradient( 0, 0, 0, titleRect.height() );
-            gradient.setColorAt(0.0, titleBarColor.lighter( lightfactor ) );
-            gradient.setColorAt(0.8, titleBarColor);
+            gradient.setColorAt(0.0, titleBarColor.lighter(185) );
+            gradient.setColorAt(0.04, titleBarColor.lighter(lightfactor));
+            gradient.setColorAt(0.8, titleBarColor.lighter(gv));
             painter->setBrush(gradient);
 
-        // if user doesn't want a gradient, we paint a nice line on top
-        // while respecting the user's colorscheme
+        // if user doesn't want a gradient, we only paint
+        // highlight line and titlebar color
         } else {
             const QColor titleBarColor( this-> titleBarColor());
             QLinearGradient gradient(0, 0, 0, titleRect.height());
             gradient.setColorAt(0.0, titleBarColor.lighter(185));
-            gradient.setColorAt(0.03, titleBarColor);
+            gradient.setColorAt(0.04, titleBarColor);
             painter->setBrush(gradient);
 
         }
