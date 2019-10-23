@@ -117,6 +117,37 @@
        <default>150</default>
     </entry>
 
+    <!-- border radius -->
+    <entry name="BorderRadius" type = "Enum">
+      <choices>
+          <choice name="None"/>
+          <choice name="Tiny"/>
+          <choice name="Regular"/>
+          <choice name="Extended" />
+      </choices>
+      <default>Regular</default>
+    </entry>
+
+    <!-- button spacing -->
+    <entry name="ButtonSpacing" type = "Enum">
+      <choices>
+          <choice name="Smalla"/>
+          <choice name="Regularb"/>
+          <choice name="Widea"/>
+      </choices>
+      <default>Regularb</default>
+    </entry>
+
+    <!-- button margin -->
+    <entry name="ButtonMargin" type = "Enum">
+      <choices>
+          <choice name="Smallb"/>
+          <choice name="Regularc"/>
+          <choice name="Wideb"/>
+      </choices>
+      <default>Regularc</default>
+    </entry>
+
     <!-- hide title bar -->
     <entry name="HideTitleBar" type = "Bool">
        <default>false</default>

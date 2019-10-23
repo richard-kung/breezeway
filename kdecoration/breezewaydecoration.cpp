@@ -292,6 +292,14 @@ namespace Breezeway
     }
 
     //________________________________________________________________
+    // int Decoration::sideMargin() const
+    // {
+    //     const int sM = Metrics::TitleBar_SideMargin;
+    //     const int tM = Metrics::TitleBar_TopMargin;
+        
+    // }
+
+    //________________________________________________________________
     void Decoration::updateTitleBar()
     {
         auto s = settings();
@@ -580,7 +588,7 @@ namespace Breezeway
         {
             QColor color = titleBarColor();
             int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
-            const int lfv = y > 128? 110: 120;
+            const int lfv = y > 128? 104: 110;
             const int gv = y > 128? 95: 90;
             const int lightfactor = c->isActive()? lfv: 100;
             const QColor titleBarColor( this->titleBarColor() );

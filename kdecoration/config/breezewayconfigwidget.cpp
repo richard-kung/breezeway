@@ -53,6 +53,9 @@ namespace Breezeway
         connect( m_ui.drawSizeGrip, SIGNAL(clicked()), SLOT(updateChanged()) );
         connect( m_ui.drawBackgroundGradient, SIGNAL(clicked()), SLOT(updateChanged()) );
         connect( m_ui.drawTitleBarSeparator, SIGNAL(clicked()), SLOT(updateChanged()) );
+        connect( m_ui.borderRadius, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
+        connect( m_ui.buttonSpacing, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
+        connect( m_ui.buttonMargin, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
 
         // track animations changes
         connect( m_ui.animationsEnabled, SIGNAL(clicked()), SLOT(updateChanged()) );
@@ -87,6 +90,9 @@ namespace Breezeway
         m_ui.animationsEnabled->setChecked( m_internalSettings->animationsEnabled() );
         m_ui.animationsDuration->setValue( m_internalSettings->animationsDuration() );
         m_ui.drawTitleBarSeparator->setChecked( m_internalSettings->drawTitleBarSeparator() );
+        m_ui.borderRadius->setCurrentIndex( m_internalSettings->borderRadius() );
+        m_ui.buttonSpacing->setCurrentIndex( m_internalSettings->buttonSpacing() );
+        m_ui.buttonMargin->setCurrentIndex( m_internalSettings->buttonMargin() );
 
         // load shadows
         if( m_internalSettings->shadowSize() <= InternalSettings::ShadowVeryLarge ) m_ui.shadowSize->setCurrentIndex( m_internalSettings->shadowSize() );
@@ -123,6 +129,9 @@ namespace Breezeway
         m_internalSettings->setAnimationsEnabled( m_ui.animationsEnabled->isChecked() );
         m_internalSettings->setAnimationsDuration( m_ui.animationsDuration->value() );
         m_internalSettings->setDrawTitleBarSeparator(m_ui.drawTitleBarSeparator->isChecked());
+        m_internalSettings->setBorderRadius( m_ui.borderRadius->currentIndex() );
+        m_internalSettings->setButtonSpacing( m_ui.buttonSpacing->currentIndex() );
+        m_internalSettings->setButtonMargin( m_ui.buttonMargin->currentIndex() );
 
         m_internalSettings->setShadowSize( m_ui.shadowSize->currentIndex() );
         m_internalSettings->setShadowStrength( qRound( qreal(m_ui.shadowStrength->value()*255)/100 ) );
@@ -172,6 +181,9 @@ namespace Breezeway
         m_ui.animationsEnabled->setChecked( m_internalSettings->animationsEnabled() );
         m_ui.animationsDuration->setValue( m_internalSettings->animationsDuration() );
         m_ui.drawTitleBarSeparator->setChecked( m_internalSettings->drawTitleBarSeparator() );
+        m_ui.borderRadius->setCurrentIndex( m_internalSettings->borderRadius() );
+        m_ui.buttonSpacing->setCurrentIndex( m_internalSettings->buttonSpacing() );
+        m_ui.buttonMargin->setCurrentIndex( m_internalSettings->buttonMargin() );
 
         m_ui.shadowSize->setCurrentIndex( m_internalSettings->shadowSize() );
         m_ui.shadowStrength->setValue( qRound(qreal(m_internalSettings->shadowStrength()*100)/255 ) );
@@ -198,6 +210,9 @@ namespace Breezeway
         else if( m_ui.drawBorderOnMaximizedWindows->isChecked() !=  m_internalSettings->drawBorderOnMaximizedWindows() ) modified = true;
         else if( m_ui.drawSizeGrip->isChecked() !=  m_internalSettings->drawSizeGrip() ) modified = true;
         else if( m_ui.drawBackgroundGradient->isChecked() !=  m_internalSettings->drawBackgroundGradient() ) modified = true;
+        else if( m_ui.borderRadius->currentIndex() != m_internalSettings->borderRadius() ) modified = true;
+        else if( m_ui.buttonSpacing->currentIndex() != m_internalSettings->buttonSpacing() ) modified = true;
+        else if( m_ui.buttonMargin->currentIndex() != m_internalSettings->buttonMargin() ) modified = true;
 
         // animations
         else if( m_ui.animationsEnabled->isChecked() !=  m_internalSettings->animationsEnabled() ) modified = true;

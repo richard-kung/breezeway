@@ -26,7 +26,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -151,6 +151,9 @@
        </item>
        <item row="16" column="1">
         <widget class="QComboBox" name="buttonSize">
+         <property name="currentText">
+          <string>Normal</string>
+         </property>
          <item>
           <property name="text">
            <string>Tiny</string>
@@ -188,7 +191,10 @@
        <item row="18" column="1">
         <widget class="QComboBox" name="buttonMargin">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
+         </property>
+         <property name="currentText">
+          <string>Regular</string>
          </property>
          <item>
           <property name="text">
@@ -217,7 +223,10 @@
        <item row="17" column="1">
         <widget class="QComboBox" name="buttonSpacing">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
+         </property>
+         <property name="currentText">
+          <string>Regular</string>
          </property>
          <item>
           <property name="text">
@@ -239,7 +248,10 @@
        <item row="1" column="1">
         <widget class="QComboBox" name="borderRadius">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
+         </property>
+         <property name="currentText">
+          <string>Regular</string>
          </property>
          <item>
           <property name="text">
