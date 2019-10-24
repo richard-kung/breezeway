@@ -210,13 +210,13 @@ namespace Breezeway
                     if( isChecked() )
                     {
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 11, 4 ),
-                            QPointF( 11, 7 ),
-                            QPointF( 14, 7 )} );
+                            QPointF( 10, 5 ),
+                            QPointF( 10, 8 ),
+                            QPointF( 13, 8 )} );
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 4, 11 ),
-                            QPointF( 7, 11 ),
-                            QPointF( 7, 14 )} );
+                            QPointF( 5, 10 ),
+                            QPointF( 8, 10 ),
+                            QPointF( 8, 13 )} );
                     } else {
                         painter->drawPolygon( QVector<QPointF>{
                             QPointF( 9, 6 ),

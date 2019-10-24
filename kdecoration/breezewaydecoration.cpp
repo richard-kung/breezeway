@@ -529,6 +529,7 @@ namespace Breezeway
         // TODO: optimize based on repaintRegion
         auto c = client().data();
         auto s = settings();
+        const QColor matchedTitleBarColor(c->palette().color(QPalette::Window));
 
         // paint background
         if( !c->isShaded() )
@@ -544,6 +545,25 @@ namespace Breezeway
 
             if( s->isAlphaChannelSupported() ) painter->drawRoundedRect(rect(), Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
             else painter->drawRect( rect() );
+
+            // test to see if we can force another qframe ontop
+            // QFrame  *frame = new QFrame();
+            // frame->setFrameStyle(QFrame::Box | QFrame::Plain);
+            // frame->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowTransparentForInput | Qt::WindowDoesNotAcceptFocus | Qt::WindowStaysOnTopHint);
+            // frame->setGeometry(1000,500,600,300);    
+            // // Just some fixed values to test
+            // // Set a solid green thick border.
+            // frame->setObjectName("testframe");
+            // frame->setStyleSheet("#testframe {border: 5px solid green;}");
+            // // IMPORTANT: A QRegion's coordinates are relative to the widget it's used in. This is not documented.
+            // QRegion wholeFrameRegion(0,0,600,300);
+            // QRegion innerFrameRegion = wholeFrameRegion.subtracted(QRegion(5,5,590,290));
+            // frame->setMask(innerFrameRegion);
+            // frame->setWindowOpacity(0.5);
+            // frame->show();
+            // NOTE: above code works and will create a green box that
+            // enables a click-through behaviour. I'll use this to
+            // create a macOS-like 2 pixel border around the window
 
             painter->restore();
         }
@@ -624,6 +644,9 @@ namespace Breezeway
             painter->setClipRect(titleRect, Qt::IntersectClip);
 
             // the rect is made a little bit larger to be able to clip away the rounded corners at the bottom and sides
+            // NOTE: this is possibly the reason for the shadow
+            // not properly attaching to the bottom of a titlebar when
+            // collapsing the window and leaving a blank space below it
             painter->drawRoundedRect(titleRect.adjusted(
                 isLeftEdge() ? -Metrics::Frame_FrameRadius:0,
                 isTopEdge() ? -Metrics::Frame_FrameRadius:0,
