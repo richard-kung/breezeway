@@ -16,6 +16,9 @@ Glitch-b-gone with Breezeway magick!
 ![](low_contrast.png)
 If overlapping windows have not enough contrast between each other it's sometimes hard to see overlapping titlebars of you use a flat theme. Luckily, BreezewayMod comes with a neat highlight line across the top of your titlebar to get that sorted out!
 
+![](gradients.png)
+If you wish to have subtle gradients with a nicely drawn separator for your titlebar, you can have just that. The gradient and separator will, like all nifty color features, use the title bar color to determine their values. How cool is that?
+
 ## Build & Install
 Clone the repository to a directory of your choice:
 ```
