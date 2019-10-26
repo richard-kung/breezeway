@@ -56,6 +56,7 @@ namespace Breezeway
         connect( m_ui.borderRadius, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
         connect( m_ui.buttonSpacing, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
         connect( m_ui.buttonMargin, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
+        connect( m_ui.matchTitleBarColor, SIGNAL(clicked()), SLOT( updateChanged()) );
 
         // track animations changes
         connect( m_ui.animationsEnabled, SIGNAL(clicked()), SLOT(updateChanged()) );
@@ -93,6 +94,7 @@ namespace Breezeway
         m_ui.borderRadius->setCurrentIndex( m_internalSettings->borderRadius() );
         m_ui.buttonSpacing->setCurrentIndex( m_internalSettings->buttonSpacing() );
         m_ui.buttonMargin->setCurrentIndex( m_internalSettings->buttonMargin() );
+        m_ui.matchTitleBarColor->setChecked( m_internalSettings->matchTitleBarColor() );
 
         // load shadows
         if( m_internalSettings->shadowSize() <= InternalSettings::ShadowVeryLarge ) m_ui.shadowSize->setCurrentIndex( m_internalSettings->shadowSize() );
@@ -132,6 +134,7 @@ namespace Breezeway
         m_internalSettings->setBorderRadius( m_ui.borderRadius->currentIndex() );
         m_internalSettings->setButtonSpacing( m_ui.buttonSpacing->currentIndex() );
         m_internalSettings->setButtonMargin( m_ui.buttonMargin->currentIndex() );
+        m_internalSettings->setMatchTitleBarColor( m_ui.matchTitleBarColor->isChecked() );
 
         m_internalSettings->setShadowSize( m_ui.shadowSize->currentIndex() );
         m_internalSettings->setShadowStrength( qRound( qreal(m_ui.shadowStrength->value()*255)/100 ) );
@@ -184,6 +187,7 @@ namespace Breezeway
         m_ui.borderRadius->setCurrentIndex( m_internalSettings->borderRadius() );
         m_ui.buttonSpacing->setCurrentIndex( m_internalSettings->buttonSpacing() );
         m_ui.buttonMargin->setCurrentIndex( m_internalSettings->buttonMargin() );
+        m_ui.matchTitleBarColor->setChecked( m_internalSettings->matchTitleBarColor() );
 
         m_ui.shadowSize->setCurrentIndex( m_internalSettings->shadowSize() );
         m_ui.shadowStrength->setValue( qRound(qreal(m_internalSettings->shadowStrength()*100)/255 ) );
@@ -213,6 +217,7 @@ namespace Breezeway
         else if( m_ui.borderRadius->currentIndex() != m_internalSettings->borderRadius() ) modified = true;
         else if( m_ui.buttonSpacing->currentIndex() != m_internalSettings->buttonSpacing() ) modified = true;
         else if( m_ui.buttonMargin->currentIndex() != m_internalSettings->buttonMargin() ) modified = true;
+        else if( m_ui.matchTitleBarColor->isChecked() != m_internalSettings->matchTitleBarColor() ) modified = true;
 
         // animations
         else if( m_ui.animationsEnabled->isChecked() !=  m_internalSettings->animationsEnabled() ) modified = true;

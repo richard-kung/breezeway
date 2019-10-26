@@ -98,6 +98,7 @@ namespace Breezeway
         inline bool isBottomEdge() const;
 
         inline bool hideTitleBar() const;
+        inline bool matchTitleBarColor( void ) const;
         //@}
 
         public Q_SLOTS:
@@ -193,6 +194,9 @@ namespace Breezeway
 
     bool Decoration::hideTitleBar() const
     { return m_internalSettings->hideTitleBar() && !client().data()->isShaded(); }
+
+    bool Decoration::matchTitleBarColor() const
+    { return m_internalSettings->matchTitleBarColor(); }
 
 }
 
