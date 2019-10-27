@@ -573,6 +573,9 @@ namespace Breezeway
             // NOTE: above code works and will create a green box that
             // enables a click-through behaviour. I'll use this to
             // create a macOS-like 2 pixel border around the window
+            // NOTE: above code will only draw the rect area when 
+            // navigating the window decoration selection inside the
+            // appearance settings
 
             painter->restore();
         }
@@ -844,8 +847,29 @@ namespace Breezeway
                 Metrics::Frame_FrameRadius + 0.5,
                 Metrics::Frame_FrameRadius + 0.5);
 
+            // Dirty hack to draw things inside the frame
+            const QMargins b_padding = QMargins(
+                boxRect.left() - outerRect.left() - Metrics:: Shadow_Overlap - params.offset.x() + 1,
+                boxRect.top() - outerRect.top() - Metrics::Shadow_Overlap - params.offset.y() + 1,
+                outerRect.right() - boxRect.right() - Metrics::Shadow_Overlap + params.offset.x() + 1,
+                outerRect.bottom() - boxRect.bottom() - Metrics::Shadow_Overlap + params.offset.y() + 1);
+            const QRect overRect = outerRect - b_padding; // test and see what this draws
+            // this is the basecolor for the highlight
+            static QColor b_highlight = Qt::white;
+            // setting up the stroke color
+            painter.setPen(withOpacity(b_highlight.lighter(120), 0.2));
+            // setting up brush
+            painter.setBrush(Qt::NoBrush);
+            // setting up composition mode
+            painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+            // creating area to draw
+            painter.drawRoundedRect(
+                overRect, // responsible for the size of the rect
+                Metrics::Frame_FrameRadius - 0.5,
+                Metrics::Frame_FrameRadius - 0.5);
+
             // Draw outline.
-            painter.setPen(withOpacity(g_shadowColor, 0.2 * strength));
+            painter.setPen(withOpacity(g_shadowColor, 0.6 * strength));
             painter.setBrush(Qt::NoBrush);
             painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
             painter.drawRoundedRect(
