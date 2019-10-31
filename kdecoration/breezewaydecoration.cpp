@@ -208,9 +208,6 @@ namespace Breezeway
     //________________________________________________________________
     QColor Decoration::outlineColor() const
     {
-        // TODO: change color of seperator to look more macOS like
-        // probably best achieved with lighten(<100) to respect
-        // titlebar colors set by the user color scheme
         auto c( client().data() );
         if( !m_internalSettings->drawTitleBarSeparator() ) return QColor();
         if( c->isActive() ) return titleBarColor().lighter(70);
@@ -289,15 +286,8 @@ namespace Breezeway
 
         createButtons();
         createShadow();
+        // createOutline();
     }
-
-    //________________________________________________________________
-    // int Decoration::sideMargin() const
-    // {
-    //     const int sM = Metrics::TitleBar_SideMargin;
-    //     const int tM = Metrics::TitleBar_TopMargin;
-        
-    // }
 
     //________________________________________________________________
     void Decoration::updateTitleBar()
@@ -530,16 +520,6 @@ namespace Breezeway
         auto c = client().data();
         auto s = settings();
         
-        // TODO: find some way to not use window color, but instead
-        // grab the pixel closest to the titlebar and use that
-        // color value instead which would possibly also work on GTK
-        // applications as those would currently just render "white"
-        // NOTE: found this on the web, need to check if that or a
-        // similar implementation would work on GTK windows:
-        //QPixmap qPix = QPixmap::grabWidget(ui->myWidget);
-        //QImage image(qPix.toImage());
-        //QColor color(image.pixel(0, 1));
-
         // paint background
         if( !c->isShaded() )
         {
@@ -554,28 +534,6 @@ namespace Breezeway
 
             if( s->isAlphaChannelSupported() ) painter->drawRoundedRect(rect(), Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
             else painter->drawRect( rect() );
-
-            // test to see if we can force another qframe ontop
-            // QFrame  *frame = new QFrame();
-            // frame->setFrameStyle(QFrame::Box | QFrame::Plain);
-            // frame->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowTransparentForInput | Qt::WindowDoesNotAcceptFocus | Qt::WindowStaysOnTopHint);
-            // frame->setGeometry(1000,500,600,300);    
-            // // Just some fixed values to test
-            // // Set a solid green thick border.
-            // frame->setObjectName("testframe");
-            // frame->setStyleSheet("#testframe {border: 5px solid green;}");
-            // // IMPORTANT: A QRegion's coordinates are relative to the widget it's used in. This is not documented.
-            // QRegion wholeFrameRegion(0,0,600,300);
-            // QRegion innerFrameRegion = wholeFrameRegion.subtracted(QRegion(5,5,590,290));
-            // frame->setMask(innerFrameRegion);
-            // frame->setWindowOpacity(0.5);
-            // frame->show();
-            // NOTE: above code works and will create a green box that
-            // enables a click-through behaviour. I'll use this to
-            // create a macOS-like 2 pixel border around the window
-            // NOTE: above code will only draw the rect area when 
-            // navigating the window decoration selection inside the
-            // appearance settings
 
             painter->restore();
         }
@@ -604,8 +562,25 @@ namespace Breezeway
     // for that to find the pixel closest somehow...
     {
         const auto c = client().data();
-        const QColor matchedTitleBarColor(c->palette().color(QPalette::Window));
+        // const QColor matchedTitleBarColor(c->palette().color(QPalette::Window));
         const QRect titleRect(QPoint(0, 0), QSize(size().width(), borderTop()));
+
+        int winTarget(c->windowId());
+        QPixmap qPix = QScreen::grabWindow(winTarget);
+        QImage image(qPix.toImage());
+        const QColor matchedTitleBarColor(image.pixel(1, titleRect.height()+1));
+        // x, y for image.pixel() needs to be
+        // (1, titlebarheight+1)
+
+        // TODO: find some way to not use window color, but instead
+        // grab the pixel closest to the titlebar and use that
+        // color value instead which would possibly also work on GTK
+        // applications as those would currently just render "white"
+        // NOTE: found this on the web, need to check if that or a
+        // similar implementation would work on GTK windows:
+        //QPixmap qPix = QPixmap::grabWidget(ui->myWidget);
+        //QImage image(qPix.toImage());
+        //QColor color(image.pixel(0, 1));
 
         if ( !titleRect.intersects(repaintRegion) ) return;
 
@@ -766,6 +741,13 @@ namespace Breezeway
     }
 
     //________________________________________________________________
+    // void Decoration::createOutline()
+    // {
+    //     // reserved for proper in-set highlight
+    //     // reference line ~830
+    // }
+
+    //________________________________________________________________
     void Decoration::createShadow()
     {
         QSharedPointer<KDecoration2::DecorationShadow> sShadow;
@@ -800,6 +782,7 @@ namespace Breezeway
 
             const QSize boxSize = BoxShadowRenderer::calculateMinimumBoxSize(params.shadow1.radius)
                 .expandedTo(BoxShadowRenderer::calculateMinimumBoxSize(params.shadow2.radius));
+
 
             BoxShadowRenderer shadowRenderer;
             shadowRenderer.setBorderRadius(Metrics::Frame_FrameRadius + 0.5);
@@ -846,14 +829,40 @@ namespace Breezeway
                 innerRect,
                 Metrics::Frame_FrameRadius + 0.5,
                 Metrics::Frame_FrameRadius + 0.5);
+            
 
             // Dirty hack to draw things inside the frame
+            // NOTE: this is currently rendered underneath
+            // the window as it is part of the shadow construct
             const QMargins b_padding = QMargins(
                 boxRect.left() - outerRect.left() - Metrics:: Shadow_Overlap - params.offset.x() + 1,
                 boxRect.top() - outerRect.top() - Metrics::Shadow_Overlap - params.offset.y() + 1,
                 outerRect.right() - boxRect.right() - Metrics::Shadow_Overlap + params.offset.x() + 1,
                 outerRect.bottom() - boxRect.bottom() - Metrics::Shadow_Overlap + params.offset.y() + 1);
             const QRect overRect = outerRect - b_padding; // test and see what this draws
+
+            // test to see if we can force another qframe ontop
+            // QFrame  *frame = new QFrame();
+            // frame->setFrameStyle(QFrame::Box | QFrame::Plain);
+            // frame->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowTransparentForInput | Qt::WindowDoesNotAcceptFocus | Qt::WindowStaysOnTopHint);
+            // frame->setGeometry(params.offset.x(), params.offset.y() , 600,300);    
+            // Just some fixed values to test
+            // Set a solid green thick border.
+            // frame->setObjectName("testframe");
+            // frame->setStyleSheet("#testframe {border: 5px solid green;}");
+            // // IMPORTANT: A QRegion's coordinates are relative to the widget it's used in. This is not documented.
+            // QRegion wholeFrameRegion(0,0,600,300);
+            // QRegion innerFrameRegion = wholeFrameRegion.subtracted(QRegion(5,5,590,290));
+            // frame->setMask(innerFrameRegion);
+            // frame->setWindowOpacity(0.5);
+            // frame->show();
+            // NOTE: above code works and will create a green box that
+            // enables a click-through behaviour. I'll use this to
+            // create a macOS-like 2 pixel border around the window
+            // NOTE: above code will only draw the rect area when 
+            // navigating the window decoration selection inside the
+            // appearance settings
+
             // this is the basecolor for the highlight
             static QColor b_highlight = Qt::white;
             // setting up the stroke color
