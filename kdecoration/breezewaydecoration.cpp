@@ -557,30 +557,23 @@ namespace Breezeway
 
     //________________________________________________________________
     void Decoration::paintTitleBar(QPainter *painter, const QRect &repaintRegion)
-    // NOTE: this will render GTK windows white, as
-    // GTK obv doesn't use QPalette so we need a hack
-    // for that to find the pixel closest somehow...
     {
         const auto c = client().data();
         // const QColor matchedTitleBarColor(c->palette().color(QPalette::Window));
         const QRect titleRect(QPoint(0, 0), QSize(size().width(), borderTop()));
 
+        // NOTE: this works with the following drawbacks:
+        // on program start, the window space is allocated before
+        // the window is rendered, thus making the QColor whatever
+        // underlying color it finds on start
+        // on refocus and drag the color will most likely be wrong
+        // as well
+        // TODO: find a way to make this a one-time event on start,
+        // keeping the value until window is deleted
         int winTarget(c->windowId());
         QPixmap qPix = QPixmap::grabWindow(winTarget);
         QImage image(qPix.toImage());
-        const QColor matchedTitleBarColor(image.pixel(1, titleRect.height()+1));
-        // x, y for image.pixel() needs to be
-        // (1, titlebarheight+1)
-
-        // TODO: find some way to not use window color, but instead
-        // grab the pixel closest to the titlebar and use that
-        // color value instead which would possibly also work on GTK
-        // applications as those would currently just render "white"
-        // NOTE: found this on the web, need to check if that or a
-        // similar implementation would work on GTK windows:
-        //QPixmap qPix = QPixmap::grabWidget(ui->myWidget);
-        //QImage image(qPix.toImage());
-        //QColor color(image.pixel(0, 1));
+        const QColor matchedTitleBarColor(image.pixel(1, 1));
 
         if ( !titleRect.intersects(repaintRegion) ) return;
 
