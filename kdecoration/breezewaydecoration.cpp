@@ -566,7 +566,7 @@ namespace Breezeway
         const QRect titleRect(QPoint(0, 0), QSize(size().width(), borderTop()));
 
         int winTarget(c->windowId());
-        QPixmap qPix = QScreen::grabWindow(winTarget);
+        QPixmap qPix = QPixmap::grabWindow(winTarget);
         QImage image(qPix.toImage());
         const QColor matchedTitleBarColor(image.pixel(1, titleRect.height()+1));
         // x, y for image.pixel() needs to be
