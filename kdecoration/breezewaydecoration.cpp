@@ -195,14 +195,43 @@ namespace Breezeway
     {
         auto c = client().data();
         if( hideTitleBar() ) return c->color( ColorGroup::Inactive, ColorRole::TitleBar );
-        else if( m_animation->state() == QPropertyAnimation::Running )
-        {
-            return KColorUtils::mix(
-                c->color( ColorGroup::Inactive, ColorRole::TitleBar ),
-                c->color( ColorGroup::Active, ColorRole::TitleBar ),
-                m_opacity );
-        } else return c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::TitleBar );
-
+        else if( m_internalSettings->matchTitleBarColor() ){
+            // NOTE: this works with the following drawbacks:
+            // on program start, the window space is allocated before
+            // the window is rendered, thus making the QColor whatever
+            // underlying color it finds on start
+            // on refocus and drag the color will most likely be wrong
+            // as well
+            // TODO: find a way to make this a one-time event on start,
+            // keeping the value until window is deleted
+            int winTarget(c->windowId());
+            // @DEV: QScreen needs to function, as the other
+            // function is deprecated and creates a shitton
+            // of log messages in terminal which slows down
+            // the buffer RIP optimization I guess
+            // SEE: https://doc.qt.io/qt-5/qscreen.html#grabWindow
+            const QPixmap qPix = QPixmap::grabWindow(winTarget);
+            QImage image(qPix.toImage());
+            // NOTE: offset of 1 is needed to circumvent
+            // clients drawing 1px borders by themselves
+            // setting the titlebar color with the borders
+            // NOTE: needs some work to prevent firefox
+            // active tabs recoloring the titlebar blue,
+            // same for the system settings, maybe try
+            // getting an average of several checkpoints?
+            // and maybe check back against the default
+            // QPalette::Window return to get a failsafe?
+            const QColor matchedTitleBarColor(image.pixel(1, 3));
+            return matchedTitleBarColor;
+        } else {
+            if( m_animation->state() == QPropertyAnimation::Running )
+            {
+                return KColorUtils::mix(
+                    c->color( ColorGroup::Inactive, ColorRole::TitleBar ),
+                    c->color( ColorGroup::Active, ColorRole::TitleBar ),
+                    m_opacity );
+            } else return c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::TitleBar );
+        }
     }
 
     //________________________________________________________________
@@ -562,19 +591,6 @@ namespace Breezeway
         // const QColor matchedTitleBarColor(c->palette().color(QPalette::Window));
         const QRect titleRect(QPoint(0, 0), QSize(size().width(), borderTop()));
 
-        // NOTE: this works with the following drawbacks:
-        // on program start, the window space is allocated before
-        // the window is rendered, thus making the QColor whatever
-        // underlying color it finds on start
-        // on refocus and drag the color will most likely be wrong
-        // as well
-        // TODO: find a way to make this a one-time event on start,
-        // keeping the value until window is deleted
-        int winTarget(c->windowId());
-        QPixmap qPix = QPixmap::grabWindow(winTarget);
-        QImage image(qPix.toImage());
-        const QColor matchedTitleBarColor(image.pixel(1, 1));
-
         if ( !titleRect.intersects(repaintRegion) ) return;
 
         painter->save();
@@ -584,8 +600,8 @@ namespace Breezeway
         // including highlight area
         if( m_internalSettings->drawBackgroundGradient() )
         {
-            const QColor titleBarColor = (matchTitleBarColor() ? matchedTitleBarColor : this->titleBarColor() );
-            QColor color = (matchTitleBarColor() ? matchedTitleBarColor : this->titleBarColor() );
+            const QColor titleBarColor = ( this->titleBarColor() );
+            QColor color = ( this->titleBarColor() );
             int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
             const int lfv = y > 128? 104: 110;
             const int gv = y > 128? 95: 90;
@@ -599,7 +615,7 @@ namespace Breezeway
         // if user doesn't want a gradient, we only paint
         // highlight line and titlebar color
         } else {
-            const QColor titleBarColor = (matchTitleBarColor() ? matchedTitleBarColor : this->titleBarColor() );
+            const QColor titleBarColor = ( this->titleBarColor() );
             QLinearGradient gradient(0, 0, 0, titleRect.height());
             gradient.setColorAt(0.0, titleBarColor.lighter(185));
             gradient.setColorAt(0.04, titleBarColor);

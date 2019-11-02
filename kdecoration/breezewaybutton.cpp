@@ -439,6 +439,9 @@ namespace Breezeway
         } else if ( !c->isActive() ) {
 
             QColor color;
+            // TODO: needs to be adjusted for
+            // matching titlebar colors from
+            // dynamic window colors
             color = d->titleBarColor();
             int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
             if(y > 128) {
