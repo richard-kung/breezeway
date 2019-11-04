@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>564</width>
-    <height>568</height>
+    <height>668</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -133,14 +133,44 @@
           <string>Titlebar</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
-          <item row="8" column="0">
+          <item row="10" column="0">
            <widget class="QCheckBox" name="drawBackgroundGradient">
             <property name="text">
              <string>Draw titlebar background gradient</string>
             </property>
            </widget>
           </item>
-          <item row="10" column="0">
+          <item row="8" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item alignment="Qt::AlignRight">
+             <widget class="QLabel" name="labelTitleBarHeight">
+              <property name="text">
+               <string>Titlebar height:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="titleBarHeight">
+              <item>
+               <property name="text">
+                <string>Small</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Regular</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Extended</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="12" column="0">
            <widget class="QCheckBox" name="drawTitleBarSeparator">
             <property name="text">
              <string>Draw separator between titlebar and window</string>
@@ -200,7 +230,7 @@
             </item>
            </layout>
           </item>
-          <item row="11" column="0">
+          <item row="13" column="0">
            <widget class="QCheckBox" name="matchTitleBarColor">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Maximum">

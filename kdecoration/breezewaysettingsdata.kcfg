@@ -148,6 +148,16 @@
       <default>Regularc</default>
     </entry>
 
+    <!-- title height -->
+    <entry name="TitleBarHeight" type = "Enum">
+      <choices>
+        <choice name="Smallc"/>
+        <choice name="Regulard"/>
+        <choice name="Widec"/>
+      </choices>
+      <default>Regulard</default>
+    </entry>
+
     <!-- match color -->
     <entry name="MatchTitleBarColor" type= "Bool">
       <default>false</default>

@@ -44,10 +44,17 @@ namespace Breezeway
         Frame_FrameRadiusExtended = 7,
 
         //* titlebar metrics, in units of small spacing
+        TitleBar_MarginSmall = 1,
+        TitleBar_Margin = 3,
+        TitleBar_MarginLarge = 5,
         TitleBar_TopMargin = 3,
         TitleBar_BottomMargin = 3,
+        TitleBar_SideMarginSmall = 2,
         TitleBar_SideMargin = 4,
+        TitleBar_SideMarginLarge = 6,
+        TitleBar_ButtonSpacingSmall = 2,
         TitleBar_ButtonSpacing = 4,
+        TitleBar_ButtonSpacingLarge = 6,
 
         // shadow dimensions (pixels)
         Shadow_Overlap = 3,

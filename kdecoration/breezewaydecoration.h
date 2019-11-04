@@ -70,8 +70,17 @@ namespace Breezeway
         //* button height
         int buttonHeight() const;
 
+        // button spacing
+        int customButtonSpacing() const;
+
+        // button margin
+        int customButtonMargin() const;
+
         // border radius
         int customRadius() const;
+
+        // title bar height
+        int customTitleBarHeight() const;
 
         //*@name active state change animation
         //@{

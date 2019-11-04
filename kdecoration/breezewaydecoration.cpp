@@ -346,10 +346,10 @@ namespace Breezeway
         auto s = settings();
         auto c = client().data();
         const bool maximized = isMaximized();
-        const int width =  maximized ? c->width() : c->width() - 2*s->largeSpacing()*Metrics::TitleBar_SideMargin;
-        const int height = maximized ? borderTop() : borderTop() - s->smallSpacing()*Metrics::TitleBar_TopMargin;
-        const int x = maximized ? 0 : s->largeSpacing()*Metrics::TitleBar_SideMargin;
-        const int y = maximized ? 0 : s->smallSpacing()*Metrics::TitleBar_TopMargin;
+        const int width =  maximized ? c->width() : c->width() - 2*s->largeSpacing()*customButtonMargin();
+        const int height = maximized ? borderTop() : borderTop() - s->smallSpacing()*customTitleBarHeight();
+        const int x = maximized ? 0 : s->largeSpacing()*customButtonMargin();
+        const int y = maximized ? 0 : s->smallSpacing()*customTitleBarHeight();
         setTitleBar(QRect(x, y, width, height));
     }
 
@@ -458,10 +458,10 @@ namespace Breezeway
             // padding below
             // extra pixel is used for the active window outline
             const int baseSize = s->smallSpacing();
-            top += baseSize*Metrics::TitleBar_BottomMargin + 1;
+            top += baseSize*customTitleBarHeight() + 1;
 
             // padding above
-            top += baseSize*TitleBar_TopMargin;
+            top += baseSize*customTitleBarHeight();
 
         }
 
@@ -503,9 +503,9 @@ namespace Breezeway
         const auto s = settings();
 
         // adjust button position
-        const int bHeight = captionHeight() + (isTopEdge() ? s->smallSpacing()*Metrics::TitleBar_TopMargin:0);
+        const int bHeight = captionHeight() + (isTopEdge() ? s->smallSpacing()*customTitleBarHeight():0);
         const int bWidth = buttonHeight();
-        const int verticalOffset = (isTopEdge() ? s->smallSpacing()*Metrics::TitleBar_TopMargin:0) + (captionHeight()-buttonHeight())/2;
+        const int verticalOffset = (isTopEdge() ? s->smallSpacing()*customTitleBarHeight():0) + (captionHeight()-buttonHeight())/2;
         foreach( const QPointer<KDecoration2::DecorationButton>& button, m_leftButtons->buttons() + m_rightButtons->buttons() )
         {
             button.data()->setGeometry( QRectF( QPoint( 0, 0 ), QSizeF( bWidth, bHeight ) ) );
@@ -518,11 +518,11 @@ namespace Breezeway
         {
 
             // spacing
-            m_leftButtons->setSpacing(s->smallSpacing()*Metrics::TitleBar_ButtonSpacing);
+            m_leftButtons->setSpacing(s->smallSpacing()*customButtonSpacing());
 
             // padding
-            const int vPadding = isTopEdge() ? 0 : s->smallSpacing()*Metrics::TitleBar_TopMargin;
-            const int hPadding = s->smallSpacing()*Metrics::TitleBar_SideMargin;
+            const int vPadding = isTopEdge() ? 0 : s->smallSpacing()*customTitleBarHeight();
+            const int hPadding = s->smallSpacing()*customButtonMargin();
             if( isLeftEdge() )
             {
                 // add offsets on the side buttons, to preserve padding, but satisfy Fitts law
@@ -542,11 +542,11 @@ namespace Breezeway
         {
 
             // spacing
-            m_rightButtons->setSpacing(s->smallSpacing()*Metrics::TitleBar_ButtonSpacing);
+            m_rightButtons->setSpacing(s->smallSpacing()*customButtonSpacing());
 
             // padding
-            const int vPadding = isTopEdge() ? 0 : s->smallSpacing()*Metrics::TitleBar_TopMargin;
-            const int hPadding = s->smallSpacing()*Metrics::TitleBar_SideMargin;
+            const int vPadding = isTopEdge() ? 0 : s->smallSpacing()*customTitleBarHeight();
+            const int hPadding = s->smallSpacing()*customButtonMargin();
             if( isRightEdge() )
             {
 
@@ -699,6 +699,42 @@ namespace Breezeway
     }
 
     //________________________________________________________________
+    int Decoration::customTitleBarHeight() const
+    {
+        switch( m_internalSettings->titleBarHeight() )
+        {
+            case 0: return Metrics::TitleBar_MarginSmall;
+            default:
+            case 1: return Metrics::TitleBar_Margin;
+            case 2: return Metrics::TitleBar_MarginLarge;
+        }
+    }
+
+    //________________________________________________________________
+    int Decoration::customButtonMargin() const
+    {
+        switch( m_internalSettings->buttonMargin() )
+        {
+            case 0: return Metrics::TitleBar_SideMarginSmall;
+            default:
+            case 1: return Metrics::TitleBar_SideMargin;
+            case 2: return Metrics::TitleBar_SideMarginLarge;
+        }
+    }
+
+    //________________________________________________________________
+    int Decoration::customButtonSpacing() const
+    {
+        switch( m_internalSettings->buttonSpacing() )
+        {
+            case 0: return Metrics::TitleBar_ButtonSpacingSmall;
+            default:
+            case 1: return Metrics::TitleBar_ButtonSpacing;
+            case 2: return Metrics::TitleBar_ButtonSpacingLarge;
+        }
+    }
+
+    //________________________________________________________________
     int Decoration::customRadius() const
     {
         switch( m_internalSettings->borderRadius() )
@@ -730,7 +766,7 @@ namespace Breezeway
 
     //________________________________________________________________
     int Decoration::captionHeight() const
-    { return hideTitleBar() ? borderTop() : borderTop() - settings()->smallSpacing()*(Metrics::TitleBar_BottomMargin + Metrics::TitleBar_TopMargin ) - 1; }
+    { return hideTitleBar() ? borderTop() : borderTop() - settings()->smallSpacing()*(customTitleBarHeight() + customTitleBarHeight() ) - 1; }
 
     //________________________________________________________________
     QPair<QRect,Qt::Alignment> Decoration::captionRect() const
@@ -740,15 +776,15 @@ namespace Breezeway
 
             auto c = client().data();
             const int leftOffset = m_leftButtons->buttons().isEmpty() ?
-                Metrics::TitleBar_SideMargin*settings()->smallSpacing():
-                m_leftButtons->geometry().x() + m_leftButtons->geometry().width() + Metrics::TitleBar_SideMargin*settings()->smallSpacing();
+                customButtonMargin()*settings()->smallSpacing():
+                m_leftButtons->geometry().x() + m_leftButtons->geometry().width() + customButtonMargin()*settings()->smallSpacing();
 
             const int rightOffset = m_rightButtons->buttons().isEmpty() ?
-                Metrics::TitleBar_SideMargin*settings()->smallSpacing() :
-                size().width() - m_rightButtons->geometry().x() + Metrics::TitleBar_SideMargin*settings()->smallSpacing();
+                customButtonMargin()*settings()->smallSpacing() :
+                size().width() - m_rightButtons->geometry().x() + customButtonMargin()*settings()->smallSpacing();
 
          
-            const int yOffset = settings()->smallSpacing()*Metrics::TitleBar_TopMargin;
+            const int yOffset = settings()->smallSpacing()*customTitleBarHeight();
             const QRect maxRect( leftOffset, yOffset, size().width() - leftOffset - rightOffset, captionHeight() );
 
             switch( m_internalSettings->titleAlignment() )
