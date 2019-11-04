@@ -1,6 +1,6 @@
 # BreezewayMod
 ## About
-BreezewayMod is a fork of the Breezeway window decoration which aims to mimic the macOS interface. But with powerups.
+![](breezewaymod_icon.png) BreezewayMod is a fork of the Breezeway window decoration which aims to mimic the macOS interface. But with powerups.
 Did I mention that it comes without weird glitches on the rounded corners?
 
 ## Screenshots

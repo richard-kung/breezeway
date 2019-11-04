@@ -201,11 +201,14 @@ namespace Breezeway
             // the window is rendered, thus making the QColor whatever
             // underlying color it finds on start
             // on refocus and drag the color will most likely be wrong
-            // as well
+            // as well, performance also takes a massive hit with this
+            // setting turned on
+            // TODO: read more about QPixmap optimization (in specific
+            // how the cache works -> see QPixmapCache::clear()
             // TODO: find a way to make this a one-time event on start,
             // keeping the value until window is deleted
             int winTarget(c->windowId());
-            // @DEV: QScreen needs to function, as the other
+            // TODO: QScreen needs to function, as the other
             // function is deprecated and creates a shitton
             // of log messages in terminal which slows down
             // the buffer RIP optimization I guess
@@ -215,9 +218,9 @@ namespace Breezeway
             // NOTE: offset of 1 is needed to circumvent
             // clients drawing 1px borders by themselves
             // setting the titlebar color with the borders
-            // NOTE: needs some work to prevent firefox
-            // active tabs recoloring the titlebar blue,
-            // same for the system settings, maybe try
+            // NOTE: needs some work to prevent applications
+            // like systemsettings to color the titlebar in 
+            // the colorscheme's highlight color, maybe try
             // getting an average of several checkpoints?
             // and maybe check back against the default
             // QPalette::Window return to get a failsafe?
@@ -245,16 +248,35 @@ namespace Breezeway
 
     //________________________________________________________________
     QColor Decoration::fontColor() const
+    // NOTE: this needs adjustment so it can match dynamic 
+    // titlebar colors as well as static/user-defined ones
     {
-
+        const QRgb brightFont = 0xFFFFFFFF;
+        QColor color = ( this->titleBarColor() );
+        int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+        QColor newFont ( y > 128 ? color.lighter(40) : brightFont );
         auto c = client().data();
         if( m_animation->state() == QPropertyAnimation::Running )
         {
-            return KColorUtils::mix(
-                c->color( ColorGroup::Inactive, ColorRole::Foreground ),
-                c->color( ColorGroup::Active, ColorRole::Foreground ),
-                m_opacity );
-        } else return  c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::Foreground );
+            if ( m_internalSettings->matchTitleBarColor() ){
+                return KColorUtils::mix(
+                    newFont.lighter(85),
+                    newFont,
+                    m_opacity );
+            } else {
+                return KColorUtils::mix(
+                    c->color(ColorGroup::Inactive, ColorRole::Foreground ),
+                    c->color(ColorGroup::Active, ColorRole::Foreground ),
+                    m_opacity );
+            }
+        } else {
+            if ( m_internalSettings->matchTitleBarColor() ){
+                return c->isActive() ? newFont : newFont.lighter(85);
+            } else {
+                return  c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::Foreground );
+
+            }
+        }
 
     }
 
