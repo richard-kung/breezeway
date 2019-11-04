@@ -701,10 +701,9 @@ namespace Breezeway
     //________________________________________________________________
     int Decoration::customRadius() const
     {
-        const int radVal = 0;
         switch( m_internalSettings->borderRadius() )
         {
-            case 0: return radVal;
+            case 0: return Metrics::Frame_FrameRadiusNone;
             case 1: return Metrics::Frame_FrameRadiusTiny;
             default:
             case 2: return Metrics::Frame_FrameRadius;

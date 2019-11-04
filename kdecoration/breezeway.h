@@ -38,6 +38,7 @@ namespace Breezeway
     {
 
         //* corner radius (pixels)
+        Frame_FrameRadiusNone = 0,
         Frame_FrameRadiusTiny = 3,
         Frame_FrameRadius = 5,
         Frame_FrameRadiusExtended = 7,
