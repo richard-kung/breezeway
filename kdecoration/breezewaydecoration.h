@@ -70,6 +70,9 @@ namespace Breezeway
         //* button height
         int buttonHeight() const;
 
+        // border radius
+        int customRadius() const;
+
         //*@name active state change animation
         //@{
         void setOpacity( qreal );

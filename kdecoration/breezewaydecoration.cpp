@@ -583,9 +583,11 @@ namespace Breezeway
             // clip away the top part
             if( !hideTitleBar() ) painter->setClipRect(0, borderTop(), size().width(), size().height() - borderTop(), Qt::IntersectClip);
 
-            if( s->isAlphaChannelSupported() ) painter->drawRoundedRect(rect(), Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
-            else painter->drawRect( rect() );
-
+            if( s->isAlphaChannelSupported() ){
+                painter->drawRoundedRect(rect(), customRadius(), customRadius());
+            } else {
+                painter->drawRect( rect() );
+            } 
             painter->restore();
         }
 
@@ -653,7 +655,7 @@ namespace Breezeway
 
         } else if( c->isShaded() ) {
 
-            painter->drawRoundedRect(titleRect, Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
+            painter->drawRoundedRect(titleRect, customRadius(), customRadius());
 
         } else {
 
@@ -664,11 +666,11 @@ namespace Breezeway
             // not properly attaching to the bottom of a titlebar when
             // collapsing the window and leaving a blank space below it
             painter->drawRoundedRect(titleRect.adjusted(
-                isLeftEdge() ? -Metrics::Frame_FrameRadius:0,
-                isTopEdge() ? -Metrics::Frame_FrameRadius:0,
-                isRightEdge() ? Metrics::Frame_FrameRadius:0,
-                Metrics::Frame_FrameRadius),
-                Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
+                isLeftEdge() ? -customRadius():0,
+                isTopEdge() ? -customRadius():0,
+                isRightEdge() ? customRadius():0,
+                customRadius()),
+                customRadius(), customRadius());
 
         }
 
@@ -694,6 +696,20 @@ namespace Breezeway
         // draw all buttons
         m_leftButtons->paint(painter, repaintRegion);
         m_rightButtons->paint(painter, repaintRegion);
+    }
+
+    //________________________________________________________________
+    int Decoration::customRadius() const
+    {
+        const int radVal = 0;
+        switch( m_internalSettings->borderRadius() )
+        {
+            case 0: return radVal;
+            case 1: return Metrics::Frame_FrameRadiusTiny;
+            default:
+            case 2: return Metrics::Frame_FrameRadius;
+            case 3: return Metrics::Frame_FrameRadiusExtended;
+        }
     }
 
     //________________________________________________________________
@@ -732,6 +748,7 @@ namespace Breezeway
                 Metrics::TitleBar_SideMargin*settings()->smallSpacing() :
                 size().width() - m_rightButtons->geometry().x() + Metrics::TitleBar_SideMargin*settings()->smallSpacing();
 
+         
             const int yOffset = settings()->smallSpacing()*Metrics::TitleBar_TopMargin;
             const QRect maxRect( leftOffset, yOffset, size().width() - leftOffset - rightOffset, captionHeight() );
 
@@ -816,7 +833,7 @@ namespace Breezeway
 
 
             BoxShadowRenderer shadowRenderer;
-            shadowRenderer.setBorderRadius(Metrics::Frame_FrameRadius + 0.5);
+            shadowRenderer.setBorderRadius(customRadius() + 0.5);
             shadowRenderer.setBoxSize(boxSize);
             shadowRenderer.setDevicePixelRatio(1.0); // TODO: Create HiDPI shadows?
 
@@ -858,8 +875,8 @@ namespace Breezeway
             painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
             painter.drawRoundedRect(
                 innerRect,
-                Metrics::Frame_FrameRadius + 0.5,
-                Metrics::Frame_FrameRadius + 0.5);
+                customRadius() + 0.5,
+                customRadius() + 0.5);
             
 
             // Dirty hack to draw things inside the frame
@@ -905,8 +922,8 @@ namespace Breezeway
             // creating area to draw
             painter.drawRoundedRect(
                 overRect, // responsible for the size of the rect
-                Metrics::Frame_FrameRadius - 0.5,
-                Metrics::Frame_FrameRadius - 0.5);
+                customRadius() - 0.5,
+                customRadius() - 0.5);
 
             // Draw outline.
             painter.setPen(withOpacity(g_shadowColor, 0.6 * strength));
@@ -914,8 +931,8 @@ namespace Breezeway
             painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
             painter.drawRoundedRect(
                 innerRect,
-                Metrics::Frame_FrameRadius - 0.5,
-                Metrics::Frame_FrameRadius - 0.5);
+                customRadius() - 0.5,
+                customRadius() - 0.5);
 
             painter.end();
 

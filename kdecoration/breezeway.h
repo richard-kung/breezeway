@@ -38,7 +38,9 @@ namespace Breezeway
     {
 
         //* corner radius (pixels)
+        Frame_FrameRadiusTiny = 3,
         Frame_FrameRadius = 5,
+        Frame_FrameRadiusExtended = 7,
 
         //* titlebar metrics, in units of small spacing
         TitleBar_TopMargin = 3,
