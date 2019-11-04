@@ -31,14 +31,35 @@ If you wish to have subtle gradients with a nicely drawn separator for your titl
 
 With the power of Halloween and the dark arts combined, we can now match the titlebar color to the window color. And I don't mean some lame shit where I make use of ```QPalette::Window``` in the hopes of getting a nice looking window color, mmh no no no! This feature is still in early beta though and color glitches _will_ occur. Uncheck "Match colors" in the settings to turn the feature off.
 
-## Build & Install
+## Installation
 Clone the repository to a directory of your choice:
 ```
 git clone https://github.com/n4n0GH/breezeway-mod
 ```
 Note: it is recommended to clone it somewhere where you can leave the built directory in case you want to uninstall the theme. If you accidentally deleted the directory, check below for how to uninstall manually.
 
+### Dependencies
+
+Installation is currently only provided from source. Before preceding with the actual install process, make sure you have the following dependencies installed:
+
+#### Ubuntu / KDE Neon / Debian (probably)
+
+1. cmake
+2. g++ / clang
+3. extra-cmake-modules
+4. libkdecorations2-dev
+5. libkf5guiaddons-dev
+6. libkf5configwidgets-dev
+7. libkf5windowsystem-dev
+8. libkf5package-dev
+9. libqt5x11extras5-dev
+10. gettext
+11. pkg-config (optional)
+
+### Build & Install
+
 Next create a subfolder called build, change directory to that subfolder, run `cmake` in that subfolder, `make` and `make install`:
+
 ```
 mkdir build && cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr ..
