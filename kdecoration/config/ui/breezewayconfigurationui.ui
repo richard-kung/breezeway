@@ -408,6 +408,13 @@
             </item>
            </layout>
           </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="alwaysShowButtonIcons">
+            <property name="text">
+             <string>Always show button icons</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>

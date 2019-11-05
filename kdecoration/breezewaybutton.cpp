@@ -374,6 +374,10 @@ namespace Breezeway
 
             return d->titleBarColor();
 
+        } else if( d->internalSettings()->alwaysShowButtonIcons() ){
+            
+            return QColor(colorSymbol);
+
         } else if( m_animation->state() == QPropertyAnimation::Running ) {
 
             auto c = d->client().data();
