@@ -39,26 +39,26 @@ With the power of Halloween and the dark arts combined, we can now match the tit
 
 Before preceding with the actual install process, make sure you have the following dependencies installed (for Ubuntu 18.04 and derivates):
 
-    - cmake
-    - g++ / clang
-    - extra-cmake-modules
-    - libkdecorations2-dev
-    - ibkf5guiaddons-dev
-    - libkf5configwidgets-dev
-    - libkf5windowsystem-dev
-    - libkf5package-dev
-    - libqt5x11extras5-dev
-    - gettext
-    - pkg-config (optional)
+* cmake
+* g++ / clang
+* extra-cmake-modules
+* libkdecorations2-dev
+* ibkf5guiaddons-dev
+* libkf5configwidgets-dev
+* libkf5windowsystem-dev
+* libkf5package-dev
+* libqt5x11extras5-dev
+* gettext
+* pkg-config *(optional)*
 
 Clone this repository:
 
 ```
 git clone https://github.com/n4n0GH/breezeway-mod
 ```
-> **Note**: it is recommended to clone it somewhere where you can leave the built directory in case you want to uninstall it. If you accidentally deleted the directory, check below for how to uninstall manually.
+> **Note**: it's recommended to clone it somewhere where you can leave the built directory in case you want to uninstall it. If you accidentally deleted the directory, check below for how to uninstall manually.
 
-Change to **breezeway-mod** folder and create a subfolder called **build**:
+Change to **breezeway-mod** folder and create a subfolder called **buil**`:
 
 ```
 cd breezeway-mod && mkdir build && cd build
@@ -92,5 +92,5 @@ If you don't have this directory anymore, you'll need to manually delete the fol
 
 ## FAQ
 
-- What's the biggest differences between this and [Breezeway](https://github.com/richard-kung/breezeway)?
-	*As of now there are so many changes that it's fair to say it's a completely different theme.*
+**- What's the biggest differences between this and [Breezeway](https://github.com/richard-kung/breezeway)?**  
+As of now there are so many changes that it's fair to say it's a completely different theme.
