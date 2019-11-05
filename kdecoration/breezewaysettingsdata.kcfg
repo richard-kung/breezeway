@@ -159,8 +159,13 @@
     </entry>
 
     <!-- match color -->
-    <entry name="MatchTitleBarColor" type= "Bool">
-      <default>false</default>
+    <entry name="MatchTitleBarColor" type= "Enum">
+      <choices>
+        <choice name="Color"/>
+        <choice name="Palette"/>
+        <choice name="Pick"/>
+      </choices>
+      <default>Color</default>
     </entry>
 
     <!-- hide title bar -->

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>564</width>
-    <height>668</height>
+    <height>708</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,6 +37,12 @@
    </property>
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -134,46 +140,39 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="10" column="0">
-           <widget class="QCheckBox" name="drawBackgroundGradient">
-            <property name="text">
-             <string>Draw titlebar background gradient</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout">
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item alignment="Qt::AlignRight">
-             <widget class="QLabel" name="labelTitleBarHeight">
+             <widget class="QLabel" name="labelMatchTitleBarColor">
               <property name="text">
-               <string>Titlebar height:</string>
+               <string>Match color:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="titleBarHeight">
+             <widget class="QComboBox" name="matchTitleBarColor">
               <item>
                <property name="text">
-                <string>Small</string>
+                <string>Color scheme</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Regular</string>
+                <string>Window (scheme)</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Extended</string>
+                <string>Window (dynamic) BETA</string>
                </property>
               </item>
              </widget>
             </item>
            </layout>
           </item>
-          <item row="12" column="0">
-           <widget class="QCheckBox" name="drawTitleBarSeparator">
+          <item row="11" column="0">
+           <widget class="QCheckBox" name="drawBackgroundGradient">
             <property name="text">
-             <string>Draw separator between titlebar and window</string>
+             <string>Draw titlebar background gradient</string>
             </property>
            </widget>
           </item>
@@ -231,17 +230,41 @@
            </layout>
           </item>
           <item row="13" column="0">
-           <widget class="QCheckBox" name="matchTitleBarColor">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QCheckBox" name="drawTitleBarSeparator">
             <property name="text">
-             <string>Match titlebar color to window color (beta)</string>
+             <string>Draw separator between titlebar and window</string>
             </property>
            </widget>
+          </item>
+          <item row="8" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item alignment="Qt::AlignRight">
+             <widget class="QLabel" name="labelTitleBarHeight">
+              <property name="text">
+               <string>Titlebar height:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="titleBarHeight">
+              <item>
+               <property name="text">
+                <string>Small</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Regular</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Extended</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -405,46 +428,174 @@
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Animations</string>
+       <string>Effects</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="1" column="0">
-        <widget class="QLabel" name="animationsDurationLabel">
-         <property name="enabled">
-          <bool>false</bool>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="title">
+          <string>Animations</string>
          </property>
-         <property name="text">
-          <string>Anima&amp;tions duration:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>animationsDuration</cstring>
-         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="0" column="0" colspan="2">
+           <widget class="QCheckBox" name="animationsEnabled">
+            <property name="text">
+             <string>Enable transition animations</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="animationsDurationLabel">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Anima&amp;tions duration:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>animationsDuration</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="animationsDuration">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="suffix">
+             <string> ms</string>
+            </property>
+            <property name="maximum">
+             <number>500</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QSpinBox" name="animationsDuration">
-         <property name="enabled">
-          <bool>false</bool>
+       <item>
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string>Shadows</string>
          </property>
-         <property name="suffix">
-          <string> ms</string>
-         </property>
-         <property name="maximum">
-          <number>500</number>
-         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="2" column="1">
+           <widget class="KColorButton" name="shadowColor"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="inactiveShadowBehaviour">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>Regular Shadows</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Light Shadows</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>No Shadows</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="3" column="0" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>Inactive windows:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="shadowStrength">
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="minimum">
+             <number>10</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="shadowSize">
+            <item>
+             <property name="text">
+              <string comment="@item:inlistbox Button size:">None</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string comment="@item:inlistbox Button size:">Small</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string comment="@item:inlistbox Button size:">Medium</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string comment="@item:inlistbox Button size:">Large</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string comment="@item:inlistbox Button size:">Very Large</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Color:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Si&amp;ze:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>shadowSize</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string comment="strength of the shadow (from transparent to opaque)">S&amp;trength:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>shadowStrength</cstring>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="0" column="0" colspan="3">
-        <widget class="QCheckBox" name="animationsEnabled">
-         <property name="text">
-          <string>Enable animations</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="3">
+       <item>
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -456,136 +607,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_4">
-      <attribute name="title">
-       <string>Shadows</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Si&amp;ze:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>shadowSize</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Color:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="label_12">
-         <property name="text">
-          <string>Inactive windows:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QComboBox" name="inactiveShadowBehaviour">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <item>
-          <property name="text">
-           <string>Regular Shadows</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Light Shadows</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>No Shadows</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QSpinBox" name="shadowStrength">
-         <property name="suffix">
-          <string>%</string>
-         </property>
-         <property name="minimum">
-          <number>10</number>
-         </property>
-         <property name="maximum">
-          <number>100</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="KColorButton" name="shadowColor"/>
-       </item>
-       <item row="4" column="0" colspan="3">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="shadowSize">
-         <item>
-          <property name="text">
-           <string comment="@item:inlistbox Button size:">None</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string comment="@item:inlistbox Button size:">Small</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string comment="@item:inlistbox Button size:">Medium</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string comment="@item:inlistbox Button size:">Large</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string comment="@item:inlistbox Button size:">Very Large</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string comment="strength of the shadow (from transparent to opaque)">S&amp;trength:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>shadowStrength</cstring>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>
@@ -611,13 +632,19 @@
        <string>About</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0" alignment="Qt::AlignTop">
+       <item row="1" column="0">
         <widget class="QLabel" name="label_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="lineWidth">
           <number>1</number>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Noto Sans';&quot;&gt;BreezwayMod is based on Richard Kung's `Breezeway` KDE KWin window decoration theme.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Noto Sans';&quot;&gt;Newest version and changelog available at &lt;/span&gt;&lt;a href=&quot;https://github.com/n4n0GH/breezeway-mod&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; text-decoration: underline; color:#2980b9;&quot;&gt;https://github.com/n4n0GH/breezeway-mod&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Noto Sans';&quot;&gt;The program is provided as is with no warranty of any kind, including the warranty of design, merchantibility and fitness for a particular purpose.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Noto Sans';&quot;&gt;2019 was a weird year.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Noto Sans';&quot;&gt;BreezwayMod is based on Richard Kung's `Breezeway` KDE KWin window decoration theme.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Noto Sans';&quot;&gt;Newest version and changelog available at &lt;/span&gt;&lt;a href=&quot;https://github.com/n4n0GH/breezeway-mod&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; text-decoration: underline; color:#2980b9;&quot;&gt;https://github.com/n4n0GH/breezeway-mod&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Noto Sans';&quot;&gt;This theme looks great with the &lt;/span&gt;&lt;a href=&quot;https://github.com/n4n0GH/KDE-Rounded-Corners&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;KDE-Rounded-Corners KWin script&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Noto Sans';&quot;&gt;!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Noto Sans';&quot;&gt;The program is provided as is with no warranty of any kind, including the warranty of design, merchantibility and fitness for a particular purpose.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Noto Sans';&quot;&gt;2019 was a weird year.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::RichText</enum>
@@ -658,9 +685,6 @@
  <tabstops>
   <tabstop>animationsEnabled</tabstop>
   <tabstop>animationsDuration</tabstop>
-  <tabstop>shadowSize</tabstop>
-  <tabstop>shadowStrength</tabstop>
-  <tabstop>shadowColor</tabstop>
  </tabstops>
  <resources>
   <include location="about.qrc"/>

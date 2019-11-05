@@ -56,7 +56,7 @@ namespace Breezeway
         connect( m_ui.borderRadius, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
         connect( m_ui.buttonSpacing, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
         connect( m_ui.buttonMargin, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
-        connect( m_ui.matchTitleBarColor, SIGNAL(clicked()), SLOT( updateChanged()) );
+        connect( m_ui.matchTitleBarColor, SIGNAL(currentIndexChanged(int)), SLOT( updateChanged()) );
         connect( m_ui.titleBarHeight, SIGNAL(currentIndexChanged(int)), SLOT(
             updateChanged()) );
 
@@ -96,7 +96,7 @@ namespace Breezeway
         m_ui.borderRadius->setCurrentIndex( m_internalSettings->borderRadius() );
         m_ui.buttonSpacing->setCurrentIndex( m_internalSettings->buttonSpacing() );
         m_ui.buttonMargin->setCurrentIndex( m_internalSettings->buttonMargin() );
-        m_ui.matchTitleBarColor->setChecked( m_internalSettings->matchTitleBarColor() );
+        m_ui.matchTitleBarColor->setCurrentIndex( m_internalSettings->matchTitleBarColor() );
         m_ui.titleBarHeight->setCurrentIndex( m_internalSettings->titleBarHeight() );
 
         // load shadows
@@ -137,7 +137,7 @@ namespace Breezeway
         m_internalSettings->setBorderRadius( m_ui.borderRadius->currentIndex() );
         m_internalSettings->setButtonSpacing( m_ui.buttonSpacing->currentIndex() );
         m_internalSettings->setButtonMargin( m_ui.buttonMargin->currentIndex() );
-        m_internalSettings->setMatchTitleBarColor( m_ui.matchTitleBarColor->isChecked() );
+        m_internalSettings->setMatchTitleBarColor( m_ui.matchTitleBarColor->currentIndex() );
         m_internalSettings->setTitleBarHeight( m_ui.titleBarHeight->currentIndex() );
 
         m_internalSettings->setShadowSize( m_ui.shadowSize->currentIndex() );
@@ -191,7 +191,7 @@ namespace Breezeway
         m_ui.borderRadius->setCurrentIndex( m_internalSettings->borderRadius() );
         m_ui.buttonSpacing->setCurrentIndex( m_internalSettings->buttonSpacing() );
         m_ui.buttonMargin->setCurrentIndex( m_internalSettings->buttonMargin() );
-        m_ui.matchTitleBarColor->setChecked( m_internalSettings->matchTitleBarColor() );
+        m_ui.matchTitleBarColor->setCurrentIndex( m_internalSettings->matchTitleBarColor() );
         m_ui.titleBarHeight->setCurrentIndex( m_internalSettings->titleBarHeight() );
 
         m_ui.shadowSize->setCurrentIndex( m_internalSettings->shadowSize() );
@@ -222,7 +222,7 @@ namespace Breezeway
         else if( m_ui.borderRadius->currentIndex() != m_internalSettings->borderRadius() ) modified = true;
         else if( m_ui.buttonSpacing->currentIndex() != m_internalSettings->buttonSpacing() ) modified = true;
         else if( m_ui.buttonMargin->currentIndex() != m_internalSettings->buttonMargin() ) modified = true;
-        else if( m_ui.matchTitleBarColor->isChecked() != m_internalSettings->matchTitleBarColor() ) modified = true;
+        else if( m_ui.matchTitleBarColor->currentIndex() != m_internalSettings->matchTitleBarColor() ) modified = true;
         else if( m_ui.titleBarHeight->currentIndex() != m_internalSettings->titleBarHeight() ) modified = true;
 
         // animations
