@@ -100,11 +100,11 @@ A: The KDE store is meant to provide easy access to Aurorae themes and KDE's set
 
 **Q: Why is blur not enabled by default on this theme?**
 
-A: There's a massive ongoing issue with the KDecoration2 framework which will treat the titlebar - and windows in general - as if they had 90° corners, i.e. perfectly rectangular shapes. This leads to something I call "blur bleed", which enables you to see the blur effect being rendered _underneath_ the window when your theme uses rounded corners. This affects regular Aurorae themes and QML themes alike.
+A: There's a massive ongoing issue with the KDecoration2 framework which will treat the titlebar - and windows in general - as if they had 90° corners, i.e. perfectly rectangular shapes. This leads to something I call "blur bleed", which enables you to see the blur effect being rendered _underneath_ the window when your theme uses rounded corners. This affects regular Aurorae themes and QML themes alike. Read more about it on the KDE bugtracker: https://bugs.kde.org/show_bug.cgi?id=395725
 
 | Description | Showcase |
 | --- | --- |
-| This glitch is caused by ![KDecoration2 having no clue about window shapes](https://bugs.kde.org/show_bug.cgi?id=395725), thus rendering shadows and blur as if the window were perfectly rectangular. | ![](sierrabreeze.png?raw=true) |
+| This glitch in action. | ![](sierrabreeze.png?raw=true) |
 | BreezewayMod doesn't have that problem because it doesn't rely on blur features until KDecoration2 gets fixed. | ![](breezewaymod.png?raw=true) |
 
 **Q: But I really don't care about the glitches, I just want blur! How can I do this?**
