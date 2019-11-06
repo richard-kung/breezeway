@@ -2,32 +2,26 @@
 
 <h1 align="center">BreezewayMod</h1>
 
-**BreezewayMod** is a fork of the [Breezeway](https://github.com/richard-kung/breezeway) window decoration, which aims to mimic the **macOS style**, but with **power ups**.
+**BreezewayMod** is a fork of the ![Breezeway](https://github.com/richard-kung/breezeway) window decoration, which aims to mimic macOS' window decorations, but with **power ups**.
 
-> **Note**: It comes without weird glitches on the rounded corners.
+It also works great with the ![KDE-Rounded-Corners](https://github.com/n4n0GH/KDE-Rounded-Corners) KWin script.
 
 ## Preview
 
 ![](screenshot.png?raw=true)
 
-> Looks great  with light and dark color schemes. Shown here with [Arc](https://github.com/PapirusDevelopmentTeam/arc-kde) and [Arc-Dark](https://github.com/PapirusDevelopmentTeam/arc-kde) color schemes.
+Looks great  with light and dark color schemes. Shown here with ![Arc](https://github.com/PapirusDevelopmentTeam/arc-kde) and ![Arc-Dark](https://github.com/PapirusDevelopmentTeam/arc-kde) color schemes.
 
-
-| **The usual glitch on dark themes**                          | ![](sierrabreeze.png?raw=true) |
-| :----------------------------------------------------------- | :----------------------------: |
-| **Glitch be gone with BreezewayMod**                         | ![](breezewaymod.png?raw=true) |
-| **No more overlapping windows with not enough contrast between each other** | ![](low_contrast.png?raw=true) |
-| **BreezewayMod comes with a neat highlight line across the top of titlebars** |  ![](gradients.png?raw=true)   |
-
-> **Note**: If you wish to have subtle gradients with a nicely drawn separator for titlebars, you can have just that. The gradient and separator will, like all nifty color features, use the title bar color to determine their values. *—How cool is that?*
-
-## Experimental Features
-
-With the power of Halloween and the dark arts combined, we can now match the titlebars color to the windows color. And I don't mean some lame shit where I make use of `QPalette::Window` in the hopes of getting a nice looking window color. *—Hmmm, no, no no!*
-
-![](match_colors.png?raw=true)
-
-> **Note**: This feature is still in early beta though and color glitches ***will*** occur. Please uncheck **Match titlebar color to window color (beta)** in **BreezewayMod settings** to turn this feature off.
+| Feature | Screenshot |
+| --- | --- |
+| Titlebars can use the color supplied by your system's color scheme... | ![](regularcolors.png?raw=true) |
+| ...or match the window color of your color scheme... | ![](colormatching.png?raw=true) |
+| ...or use a dynamic color picker to paint the titlebar and perfectly match even GTK applications! **Please note that this feature is highly unstable and experimental.** | ![](perfectcolor.png?raw=true) |
+| Shadows and highlight lines make sure you don't lose track of your windows in low contrast environments. | ![](low_contrast.png?raw=true) |
+| Embrace flat design, or use gradients and a titlebar separator; your choice! BreezewayMod will use your chosen color profile to bring you a smooth interface that fits _your_ desktop. |  ![](gradients.png?raw=true) |
+| A nice, clean settings page gives you granular control over the theme's features. | ![](settings.gif?raw=true) |
+| Support for HiDPI screens comes out of the box as well. Just increase size of titlebar, buttons and border radius and you're all set. | ![](hidpi.png?raw=true)
+| Hovering over window buttons reveals additional icons. You can choose to also always show the icons. | ![](buttonicons.png?raw=true) |
 
 ## Building and Installation
 
@@ -45,12 +39,12 @@ Before proceeding with the actual installation process, make sure you have the f
 * gettext
 * pkg-config *(optional)*
 
-Download the [latest release](https://github.com/n4n0GH/breezeway-mod/releases) or clone this repository:
+Download the [latest stable release](https://github.com/n4n0GH/breezeway-mod/releases) or clone this repository for bleeding edge builds:
 
 ```
 git clone https://github.com/n4n0GH/breezeway-mod
 ```
-> **Note**: It's recommended to clone it where you can leave the built directory, just in case you want to uninstall **Breezeway-mod**. However, if you accidentally removed the directory, please check below for manually uninstallation instructions.
+It's recommended to clone the repository to where you can leave the built directory, just in case you want to uninstall **BreezewayMod**. However, if you accidentally removed the directory, please check below for manually uninstallation instructions.
 
 Change to `breezeway-mod` directory and create a new directory called `build`:
 
@@ -63,6 +57,12 @@ To install, use `cmake`, `make` and `make install`:
 ```
 cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 make && sudo make install
+```
+
+It may be necessary to restart the KWin window manager after that, so either reboot your machine, or do it the cool way:
+
+```
+kwin_x11 --replace &
 ```
 
 ## Uninstalling
@@ -90,5 +90,23 @@ If you have any questions regarding **BreezewayMod**, you are welcome to [open a
 
 ## FAQ
 
-**• What's the biggest differences between this theme and [Breezeway](https://github.com/richard-kung/breezeway)?**  
-As of now there are so many changes that it's fair to say it's a completely different theme.
+**Q: What's the biggest differences between this theme and [Breezeway](https://github.com/richard-kung/breezeway)?**  
+
+A: As of now there are ![so many changes](https://github.com/richard-kung/breezeway/compare/master...n4n0GH:master) that it's fair to say it's a completely different theme.
+
+**Q: I can see this theme in the KDE store, but I can't install it through KDE's settings menu, what's up with that?**
+
+A: The KDE store is meant to provide easy access to Aurorae themes and KDE's settings menu is pretty good at downloading those themes and moving them around. BreezewayMod is written in C++ and not using the Aurorae engine. Sorry to say, but you're going to have to get your hands dirty in the terminal.
+
+**Q: Why is blur not enabled by default on this theme?**
+
+A: There's a massive ongoing issue with the KDecoration2 framework which will treat the titlebar - and windows in general - as if they had 90° corners, i.e. perfectly rectangular shapes. This leads to something I call "blur bleed", which enables you to see the blur effect being rendered _underneath_ the window when your theme uses rounded corners. This affects regular Aurorae themes and QML themes alike.
+
+| Description | Showcase |
+| --- | --- |
+| This glitch is caused by ![KDecoration2 having no clue about window shapes](https://bugs.kde.org/show_bug.cgi?id=395725), thus rendering shadows and blur as if the window were perfectly rectangular. | ![](sierrabreeze.png?raw=true) |
+| BreezewayMod doesn't have that problem because it doesn't rely on blur features until KDecoration2 gets fixed. | ![](breezewaymod.png?raw=true) |
+
+**Q: But I really don't care about the glitches, I just want blur! How can I do this?**
+
+A: Find the `breezeway.json` file inside the `kdecoration` directory. [On line 12](https://github.com/n4n0GH/breezeway-mod/blob/master/kdecoration/breezeway.json#L12) you switch out `"blur": false,` with `"blur": true,` and then compile the theme according to the instructions. 
