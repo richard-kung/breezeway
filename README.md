@@ -1,43 +1,37 @@
+<p align="center"><img src="breezewaymod_icon.png" alt="BreezewayMod" width="100" height="100"></p>
 
-# BreezewayMod
+<h1 align="center">BreezewayMod</h1>
 
-## About
+**BreezewayMod** is a fork of the [Breezeway](https://github.com/richard-kung/breezeway) window decoration, which aims to mimic the **macOS style**, but with **power ups**.
 
-<img src="breezewaymod_icon.png" style="zoom: 25%;" /> 
-
-**BreezewayMod** is a fork of the [Breezeway](https://github.com/richard-kung/breezeway) window decoration, which aims to mimic the *macOS style*, but with **power ups**.
-
-> **Note**: it comes without weird glitches on the rounded corners.
+> **Note**: It comes without weird glitches on the rounded corners.
 
 ## Preview
 
-![](screenshot.png)
+![](screenshot.png?raw=true)
 
 > Looks great  with light and dark color schemes. Shown here with [Arc](https://github.com/PapirusDevelopmentTeam/arc-kde) and [Arc-Dark](https://github.com/PapirusDevelopmentTeam/arc-kde) color schemes.
 
 
-| The usual glitch on dark themes            | ![](sierrabreeze.png) |
-| ------------------------------------------ | :-------------------: |
-| Glitch be gone with BreezewayMod. *Magic!* | ![](breezewaymod.png) |
-| Glitch be gone with BreezewayMod. *Magic!* | ![](low_contrast.png) |
+| **The usual glitch on dark themes**                          | ![](sierrabreeze.png?raw=true) |
+| :----------------------------------------------------------- | :----------------------------: |
+| **Glitch be gone with BreezewayMod**                         | ![](breezewaymod.png?raw=true) |
+| **No more overlapping windows with not enough contrast between each other** | ![](low_contrast.png?raw=true) |
+| **BreezewayMod comes with a neat highlight line across the top of titlebars** |  ![](gradients.png?raw=true)   |
 
-On overlapping windows with not enough contrast between each other, it's hard to see overlapping titlebars if using a flat theme. Luckily, **BreezewayMod** comes with a neat highlight line across the top of titlebars to get that sorted out:
-
-![](gradients.png)
-
-> **Note**: if you wish to have subtle gradients with a nicely drawn separator for titlebars, you can have just that. The gradient and separator will, like all nifty color features, use the title bar color to determine their values. *How cool is that?*
+> **Note**: If you wish to have subtle gradients with a nicely drawn separator for titlebars, you can have just that. The gradient and separator will, like all nifty color features, use the title bar color to determine their values. *—How cool is that?*
 
 ## Experimental Features
 
-With the power of Halloween and the dark arts combined, we can now match the titlebars color to the windows color... And I don't mean some lame shit where I make use of `QPalette::Window` in the hopes of getting a nice looking window color... Hmmm, no, no no!
+With the power of Halloween and the dark arts combined, we can now match the titlebars color to the windows color. And I don't mean some lame shit where I make use of `QPalette::Window` in the hopes of getting a nice looking window color. *—Hmmm, no, no no!*
 
-![](match_colors.png)
+![](match_colors.png?raw=true)
 
-> **Note**: this feature is still in early beta though and color glitches *will* occur. Uncheck **Match colors** in Plasma Settings to turn this feature off.
+> **Note**: This feature is still in early beta though and color glitches ***will*** occur. Please uncheck **Match titlebar color to window color (beta)** in **BreezewayMod settings** to turn this feature off.
 
 ## Building and Installation
 
-Before preceding with the actual install process, make sure you have the following dependencies installed (for Ubuntu 18.04 and derivates):
+Before proceeding with the actual installation process, make sure you have the following dependencies installed:
 
 * cmake
 * g++ / clang
@@ -51,14 +45,14 @@ Before preceding with the actual install process, make sure you have the followi
 * gettext
 * pkg-config *(optional)*
 
-Clone this repository:
+Download the [latest release](https://github.com/n4n0GH/breezeway-mod/releases) or clone this repository:
 
 ```
 git clone https://github.com/n4n0GH/breezeway-mod
 ```
-> **Note**: it's recommended to clone it somewhere where you can leave the built directory in case you want to uninstall it. If you accidentally deleted the directory, check below for how to uninstall manually.
+> **Note**: It's recommended to clone it where you can leave the built directory, just in case you want to uninstall **Breezeway-mod**. However, if you accidentally removed the directory, please check below for manually uninstallation instructions.
 
-Change to **breezeway-mod** folder and create a subfolder called **buil**`:
+Change to `breezeway-mod` directory and create a new directory called `build`:
 
 ```
 cd breezeway-mod && mkdir build && cd build
@@ -79,7 +73,7 @@ In the build directory, run:
 sudo make uninstall
 ```
 
-If you don't have this directory anymore, you'll need to manually delete the following files and folders:
+If you removed the installation directory, you'll have to delete the following files and folders:
 
 ```
 /usr/lib64/cmake/BreezewayMod/BreezewayConfig.cmake
@@ -90,7 +84,11 @@ If you don't have this directory anymore, you'll need to manually delete the fol
 /usr/lib64/libbreezewaycommon5.so.5
 ```
 
+## Contribution
+
+If you have any questions regarding **BreezewayMod**, you are welcome to [open an issue](https://github.com/n4n0GH/breezeway-mod/issues).
+
 ## FAQ
 
-**- What's the biggest differences between this and [Breezeway](https://github.com/richard-kung/breezeway)?**  
+**• What's the biggest differences between this theme and [Breezeway](https://github.com/richard-kung/breezeway)?**  
 As of now there are so many changes that it's fair to say it's a completely different theme.
