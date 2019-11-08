@@ -264,7 +264,7 @@
             <item alignment="Qt::AlignRight">
              <widget class="QLabel" name="labelMatchTitleBarColor">
               <property name="text">
-               <string>Match color:</string>
+               <string>Automatically match color:</string>
               </property>
              </widget>
             </item>
@@ -282,7 +282,7 @@
               </item>
               <item>
                <property name="text">
-                <string>Window (dynamic) BETA</string>
+                <string>Window (dynamic - EXPERIMENTAL)</string>
                </property>
               </item>
              </widget>
