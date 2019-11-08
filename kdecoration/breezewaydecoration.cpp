@@ -276,7 +276,7 @@ namespace Breezeway
         auto c = client().data();
         if( m_animation->state() == QPropertyAnimation::Running )
         {
-            if ( m_internalSettings->matchTitleBarColor() ){
+            if ( m_internalSettings->matchTitleBarColor() || customColorBoxEx() ){
                 return KColorUtils::mix(
                     y > 128 ? newFont.lighter(140) : color.lighter(140),
                     newFont,
@@ -288,7 +288,7 @@ namespace Breezeway
                     m_opacity );
             }
         } else {
-            if ( m_internalSettings->matchTitleBarColor() ){
+            if ( m_internalSettings->matchTitleBarColor() || customColorBoxEx() ){
                 return c->isActive() ? newFont : y > 128 ? newFont.lighter(140) : color.lighter(140);
             } else {
                 return  c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::Foreground );
