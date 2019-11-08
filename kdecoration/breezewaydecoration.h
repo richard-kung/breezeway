@@ -96,6 +96,7 @@ namespace Breezeway
         QColor titleBarColor() const;
         QColor outlineColor() const;
         QColor fontColor() const;
+        QColor customTitleBarColor() const;
         //@}
 
         //*@name maximization modes
@@ -111,6 +112,7 @@ namespace Breezeway
 
         inline bool hideTitleBar() const;
         inline bool matchTitleBarColor( void ) const;
+        inline bool customColorBoxEx() const;
         //@}
 
         public Q_SLOTS:
@@ -209,6 +211,9 @@ namespace Breezeway
 
     bool Decoration::matchTitleBarColor() const
     { return m_internalSettings->matchTitleBarColor(); }
+    
+    bool Decoration::customColorBoxEx() const
+    { return m_internalSettings->customColorBoxEx(); }
 
 }
 

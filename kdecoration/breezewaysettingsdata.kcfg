@@ -186,6 +186,15 @@
     <entry name="CustomColorSelect" type = "Color">
       <default>231, 232, 235</default>
     </entry>
+    
+    <!-- custom title color -->
+    <entry name="CustomColorBoxEx" type = "Bool">
+      <default>false</default>
+    </entry>
+
+    <entry name="CustomColorSelectEx" type = "Color">
+      <default>231, 232, 235</default>
+    </entry>
 
     <!-- window specific settings -->
     <entry name="ExceptionType" type="Enum">

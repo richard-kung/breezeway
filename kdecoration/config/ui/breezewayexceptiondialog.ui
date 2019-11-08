@@ -87,7 +87,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="4" column="0">
-       <widget class="QCheckBox" name="customColorBox">
+       <widget class="QCheckBox" name="customColorBoxEx">
         <property name="locale">
          <locale language="English" country="Germany"/>
         </property>
@@ -163,7 +163,7 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="KColorButton" name="customColorSelect">
+       <widget class="KColorButton" name="customColorSelectEx">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -242,9 +242,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>customColorBox</sender>
+   <sender>customColorBoxEx</sender>
    <signal>toggled(bool)</signal>
-   <receiver>customColorSelect</receiver>
+   <receiver>customColorSelectEx</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

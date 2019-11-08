@@ -54,16 +54,16 @@ namespace Breezeway
             configuration->setEnabled( exception.enabled() );
             configuration->setExceptionType( exception.exceptionType() );
             configuration->setExceptionPattern( exception.exceptionPattern() );
-            configuration->setCustomColorBox( exception.customColorBox() );
-            configuration->setCustomColorSelect( exception.customColorSelect() );
             configuration->setMask( exception.mask() );
 
             // propagate all features found in mask to the output configuration
             if( exception.mask() & BorderSize ) configuration->setBorderSize( exception.borderSize() );
             configuration->setHideTitleBar( exception.hideTitleBar() );
-            configuration->setCustomColorBox( exception.customColorBox() );
-            configuration->setCustomColorSelect( exception.customColorSelect() );
 
+            // custom titlebar color settings
+            configuration->setCustomColorBoxEx( exception.customColorBoxEx() );
+            configuration->setCustomColorSelectEx( exception.customColorSelectEx() );
+            
             // append to exceptions
             _exceptions.append( configuration );
 
@@ -101,7 +101,7 @@ namespace Breezeway
     {
 
         // list of items to be written
-        QStringList keys = { "Enabled", "ExceptionPattern", "ExceptionType", "HideTitleBar", "Mask", "BorderSize", "CustomColorSelect"};
+        QStringList keys = { "Enabled", "ExceptionPattern", "ExceptionType", "HideTitleBar", "Mask", "BorderSize", "CustomColorBoxEx", "CustomColorSelectEx"};
 
         // write all items
         foreach( auto key, keys )

@@ -53,8 +53,10 @@ namespace Breezeway
         connect( m_ui.exceptionType, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
         connect( m_ui.exceptionEditor, SIGNAL(textChanged(QString)), SLOT(updateChanged()) );
         connect( m_ui.borderSizeComboBox, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
-        connect( m_ui.customColorBox, SIGNAL( clicked()), SLOT(updateChanged()) );
-        connect( m_ui.customColorSelect, SIGNAL(changed(QColor)), SLOT(updateChanged()) );
+        
+        // check for custom titlebar color
+        connect( m_ui.customColorBoxEx, SIGNAL(clicked()), SLOT(updateChanged()) );
+        connect( m_ui.customColorSelectEx, SIGNAL(changed(QColor)), SLOT(updateChanged()) );
 
         for( CheckBoxMap::iterator iter = m_checkboxes.begin(); iter != m_checkboxes.end(); ++iter )
         { connect( iter.value(), SIGNAL(clicked()), SLOT(updateChanged()) ); }
@@ -81,7 +83,9 @@ namespace Breezeway
         m_ui.exceptionEditor->setText( m_exception->exceptionPattern() );
         m_ui.borderSizeComboBox->setCurrentIndex( m_exception->borderSize() );
         m_ui.hideTitleBar->setChecked( m_exception->hideTitleBar() );
-        m_ui.customColorSelect->setColor( m_exception->customColorSelect() );
+        
+        m_ui.customColorBoxEx->setChecked( m_exception->customColorBoxEx() );
+        m_ui.customColorSelectEx->setColor( m_exception->customColorSelectEx() );
 
         // mask
         for( CheckBoxMap::iterator iter = m_checkboxes.begin(); iter != m_checkboxes.end(); ++iter )
@@ -98,7 +102,8 @@ namespace Breezeway
         m_exception->setExceptionPattern( m_ui.exceptionEditor->text() );
         m_exception->setBorderSize( m_ui.borderSizeComboBox->currentIndex() );
         m_exception->setHideTitleBar( m_ui.hideTitleBar->isChecked() );
-        m_exception->setCustomColorSelect( m_ui.customColorSelect->color() );
+        m_exception->setCustomColorBoxEx( m_ui.customColorBoxEx->isChecked() );
+        m_exception->setCustomColorSelectEx( m_ui.customColorSelectEx->color() );
 
         // mask
         unsigned int mask = None;
@@ -119,7 +124,8 @@ namespace Breezeway
         else if( m_exception->exceptionPattern() != m_ui.exceptionEditor->text() ) modified = true;
         else if( m_exception->borderSize() != m_ui.borderSizeComboBox->currentIndex() ) modified = true;
         else if( m_exception->hideTitleBar() != m_ui.hideTitleBar->isChecked() ) modified = true;
-        else if( m_exception->customColorSelect() != m_ui.customColorSelect->color() ) modified = true;
+        else if( m_exception->customColorBoxEx() != m_ui.customColorBoxEx->isChecked() ) modified = true;
+        else if( m_exception->customColorSelectEx() != m_ui.customColorSelectEx->color() ) modified = true;
         else
         {
             // check mask

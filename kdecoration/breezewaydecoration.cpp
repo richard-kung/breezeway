@@ -196,12 +196,16 @@ namespace Breezeway
         auto c = client().data();
         if( hideTitleBar() ) return c->color( ColorGroup::Inactive, ColorRole::TitleBar );
         
+        // if user specified a custom color per window
+        else if ( customColorBoxEx() )
+        {
+            return m_internalSettings->customColorSelectEx();
+        }
         // if users want to specify their own color values
         else if ( m_internalSettings->customColorBox() )
         {
             return m_internalSettings->customColorSelect();
         }
-        
         // if one of the automatic settings are used
         else switch( m_internalSettings->matchTitleBarColor() )
         {
@@ -264,8 +268,6 @@ namespace Breezeway
 
     //________________________________________________________________
     QColor Decoration::fontColor() const
-    // NOTE: this needs adjustment so it can match dynamic 
-    // titlebar colors as well as static/user-defined ones
     {
         const QRgb brightFont = 0xFFFFFFFF;
         QColor color = ( this->titleBarColor() );
