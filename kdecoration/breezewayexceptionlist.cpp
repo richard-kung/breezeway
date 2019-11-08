@@ -63,6 +63,7 @@ namespace Breezeway
             // custom titlebar color settings
             configuration->setCustomColorBoxEx( exception.customColorBoxEx() );
             configuration->setCustomColorSelectEx( exception.customColorSelectEx() );
+            configuration->setForceBrightFonts( exception.forceBrightFonts() );
             
             // append to exceptions
             _exceptions.append( configuration );
@@ -101,7 +102,7 @@ namespace Breezeway
     {
 
         // list of items to be written
-        QStringList keys = { "Enabled", "ExceptionPattern", "ExceptionType", "HideTitleBar", "Mask", "BorderSize", "CustomColorBoxEx", "CustomColorSelectEx"};
+        QStringList keys = { "Enabled", "ExceptionPattern", "ExceptionType", "HideTitleBar", "Mask", "BorderSize", "CustomColorBoxEx", "CustomColorSelectEx", "ForceBrightFonts"};
 
         // write all items
         foreach( auto key, keys )

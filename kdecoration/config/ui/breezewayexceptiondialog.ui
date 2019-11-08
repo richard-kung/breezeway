@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>450</width>
-    <height>386</height>
+    <height>413</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -86,16 +86,6 @@
       <string>Decoration Options</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="4" column="0">
-       <widget class="QCheckBox" name="customColorBoxEx">
-        <property name="locale">
-         <locale language="English" country="Germany"/>
-        </property>
-        <property name="text">
-         <string>Custom title bar color:</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="borderSizeComboBox">
         <property name="enabled">
@@ -148,10 +138,27 @@
         </item>
        </widget>
       </item>
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="customColorBoxEx">
+        <property name="locale">
+         <locale language="English" country="Germany"/>
+        </property>
+        <property name="text">
+         <string>Custom title bar color:</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QCheckBox" name="borderSizeCheckBox">
         <property name="text">
          <string>Border size:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="KColorButton" name="customColorSelectEx">
+        <property name="enabled">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -162,10 +169,10 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="KColorButton" name="customColorSelectEx">
-        <property name="enabled">
-         <bool>false</bool>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="forceBrightFonts">
+        <property name="text">
+         <string>Force bright title bar fonts</string>
         </property>
        </widget>
       </item>

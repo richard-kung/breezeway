@@ -113,6 +113,7 @@ namespace Breezeway
         inline bool hideTitleBar() const;
         inline bool matchTitleBarColor( void ) const;
         inline bool customColorBoxEx() const;
+        inline bool forceBrightFonts() const;
         //@}
 
         public Q_SLOTS:
@@ -214,6 +215,9 @@ namespace Breezeway
     
     bool Decoration::customColorBoxEx() const
     { return m_internalSettings->customColorBoxEx(); }
+
+    bool Decoration::forceBrightFonts() const
+    { return m_internalSettings->forceBrightFonts(); }
 
 }
 

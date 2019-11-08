@@ -272,13 +272,13 @@ namespace Breezeway
         const QRgb brightFont = 0xFFFFFFFF;
         QColor color = ( this->titleBarColor() );
         int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
-        QColor newFont ( y > 128 ? color.lighter(40) : brightFont );
+        QColor newFont ( forceBrightFonts() ? brightFont : y > 128 ? color.lighter(40) : brightFont );
         auto c = client().data();
         if( m_animation->state() == QPropertyAnimation::Running )
         {
             if ( m_internalSettings->matchTitleBarColor() || customColorBoxEx() ){
                 return KColorUtils::mix(
-                    y > 128 ? newFont.lighter(140) : color.lighter(140),
+                    forceBrightFonts() ? color.lighter(140) : y > 128 ? newFont.lighter(140) : color.lighter(140),
                     newFont,
                     m_opacity );
             } else {
@@ -289,7 +289,7 @@ namespace Breezeway
             }
         } else {
             if ( m_internalSettings->matchTitleBarColor() || customColorBoxEx() ){
-                return c->isActive() ? newFont : y > 128 ? newFont.lighter(140) : color.lighter(140);
+                return c->isActive() ? newFont : forceBrightFonts() ? color.lighter(140) : y > 128 ? newFont.lighter(140) : color.lighter(140);
             } else {
                 return  c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::Foreground );
 

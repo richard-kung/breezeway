@@ -57,6 +57,7 @@ namespace Breezeway
         // check for custom titlebar color
         connect( m_ui.customColorBoxEx, SIGNAL(clicked()), SLOT(updateChanged()) );
         connect( m_ui.customColorSelectEx, SIGNAL(changed(QColor)), SLOT(updateChanged()) );
+        connect( m_ui.forceBrightFonts, SIGNAL(clicked()), SLOT(updateChanged()) );
 
         for( CheckBoxMap::iterator iter = m_checkboxes.begin(); iter != m_checkboxes.end(); ++iter )
         { connect( iter.value(), SIGNAL(clicked()), SLOT(updateChanged()) ); }
@@ -86,6 +87,7 @@ namespace Breezeway
         
         m_ui.customColorBoxEx->setChecked( m_exception->customColorBoxEx() );
         m_ui.customColorSelectEx->setColor( m_exception->customColorSelectEx() );
+        m_ui.forceBrightFonts->setChecked( m_exception->forceBrightFonts() );
 
         // mask
         for( CheckBoxMap::iterator iter = m_checkboxes.begin(); iter != m_checkboxes.end(); ++iter )
@@ -104,6 +106,7 @@ namespace Breezeway
         m_exception->setHideTitleBar( m_ui.hideTitleBar->isChecked() );
         m_exception->setCustomColorBoxEx( m_ui.customColorBoxEx->isChecked() );
         m_exception->setCustomColorSelectEx( m_ui.customColorSelectEx->color() );
+        m_exception->setForceBrightFonts( m_ui.forceBrightFonts->isChecked() );
 
         // mask
         unsigned int mask = None;
@@ -126,6 +129,7 @@ namespace Breezeway
         else if( m_exception->hideTitleBar() != m_ui.hideTitleBar->isChecked() ) modified = true;
         else if( m_exception->customColorBoxEx() != m_ui.customColorBoxEx->isChecked() ) modified = true;
         else if( m_exception->customColorSelectEx() != m_ui.customColorSelectEx->color() ) modified = true;
+        else if( m_exception->forceBrightFonts() != m_ui.forceBrightFonts->isChecked() ) modified = true;
         else
         {
             // check mask
