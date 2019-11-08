@@ -278,7 +278,7 @@ namespace Breezeway
         {
             if ( m_internalSettings->matchTitleBarColor() ){
                 return KColorUtils::mix(
-                    y > 128 ? newFont.lighter(140) : newFont.lighter(45),
+                    y > 128 ? newFont.lighter(140) : color.lighter(140),
                     newFont,
                     m_opacity );
             } else {
@@ -289,7 +289,7 @@ namespace Breezeway
             }
         } else {
             if ( m_internalSettings->matchTitleBarColor() ){
-                return c->isActive() ? newFont : y > 128 ? newFont.lighter(140) : newFont.lighter(45);
+                return c->isActive() ? newFont : y > 128 ? newFont.lighter(140) : color.lighter(140);
             } else {
                 return  c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::Foreground );
 
