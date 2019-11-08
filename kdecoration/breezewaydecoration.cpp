@@ -195,6 +195,14 @@ namespace Breezeway
     {
         auto c = client().data();
         if( hideTitleBar() ) return c->color( ColorGroup::Inactive, ColorRole::TitleBar );
+        
+        // if users want to specify their own color values
+        else if ( m_internalSettings->customColorBox() )
+        {
+            return m_internalSettings->customColorSelect();
+        }
+        
+        // if one of the automatic settings are used
         else switch( m_internalSettings->matchTitleBarColor() )
         {
             default:
@@ -268,7 +276,7 @@ namespace Breezeway
         {
             if ( m_internalSettings->matchTitleBarColor() ){
                 return KColorUtils::mix(
-                    newFont.lighter(85),
+                    y > 128 ? newFont.lighter(140) : newFont.lighter(45),
                     newFont,
                     m_opacity );
             } else {
@@ -279,7 +287,7 @@ namespace Breezeway
             }
         } else {
             if ( m_internalSettings->matchTitleBarColor() ){
-                return c->isActive() ? newFont : newFont.lighter(85);
+                return c->isActive() ? newFont : y > 128 ? newFont.lighter(140) : newFont.lighter(45);
             } else {
                 return  c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::Foreground );
 

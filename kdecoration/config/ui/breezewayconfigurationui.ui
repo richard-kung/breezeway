@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>564</width>
-    <height>708</height>
+    <height>809</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -61,24 +61,32 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_6">
           <item row="3" column="0">
-           <widget class="QCheckBox" name="drawBorderOnMaximizedWindows">
-            <property name="text">
-             <string>Draw border on maximized windows</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_13">
+            <item>
+             <widget class="QCheckBox" name="drawSizeGrip">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Add handle to resize windows with no border</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="4" column="0">
-           <widget class="QCheckBox" name="drawSizeGrip">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Add handle to resize windows with no border</string>
-            </property>
-           </widget>
+          <item row="2" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <item>
+             <widget class="QCheckBox" name="drawBorderOnMaximizedWindows">
+              <property name="text">
+               <string>Draw border on maximized windows</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item row="1" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -139,46 +147,9 @@
           <string>Titlebar</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
-          <item row="10" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
-            <item alignment="Qt::AlignRight">
-             <widget class="QLabel" name="labelMatchTitleBarColor">
-              <property name="text">
-               <string>Match color:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="matchTitleBarColor">
-              <item>
-               <property name="text">
-                <string>Color scheme</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Window (scheme)</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Window (dynamic) BETA</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="11" column="0">
-           <widget class="QCheckBox" name="drawBackgroundGradient">
-            <property name="text">
-             <string>Draw titlebar background gradient</string>
-            </property>
-           </widget>
-          </item>
           <item row="4" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item alignment="Qt::AlignRight">
+            <item>
              <widget class="QLabel" name="labelTitleAlignment">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -229,12 +200,34 @@
             </item>
            </layout>
           </item>
-          <item row="13" column="0">
-           <widget class="QCheckBox" name="drawTitleBarSeparator">
-            <property name="text">
-             <string>Draw separator between titlebar and window</string>
-            </property>
-           </widget>
+          <item row="11" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <widget class="QCheckBox" name="customColorBox">
+              <property name="text">
+               <string>Use custom color</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="KColorButton" name="customColorSelect">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="12" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QCheckBox" name="drawBackgroundGradient">
+              <property name="text">
+               <string>Draw titlebar background gradient</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item row="8" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout">
@@ -262,6 +255,47 @@
                 <string>Extended</string>
                </property>
               </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="10" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item alignment="Qt::AlignRight">
+             <widget class="QLabel" name="labelMatchTitleBarColor">
+              <property name="text">
+               <string>Match color:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="matchTitleBarColor">
+              <item>
+               <property name="text">
+                <string>Color scheme</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Window (scheme)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Window (dynamic) BETA</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="14" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <item>
+             <widget class="QCheckBox" name="drawTitleBarSeparator">
+              <property name="text">
+               <string>Draw separator between titlebar and window</string>
+              </property>
              </widget>
             </item>
            </layout>
@@ -409,11 +443,15 @@
            </layout>
           </item>
           <item row="3" column="0">
-           <widget class="QCheckBox" name="alwaysShowButtonIcons">
-            <property name="text">
-             <string>Always show button icons</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_14">
+            <item>
+             <widget class="QCheckBox" name="alwaysShowButtonIcons">
+              <property name="text">
+               <string>Always show button icons</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -444,36 +482,23 @@
           <string>Animations</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_8">
-          <item row="0" column="0" colspan="2">
+          <item row="0" column="0">
            <widget class="QCheckBox" name="animationsEnabled">
             <property name="text">
              <string>Enable transition animations</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="animationsDurationLabel">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Anima&amp;tions duration:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="buddy">
-             <cstring>animationsDuration</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
+          <item row="0" column="1">
            <widget class="QSpinBox" name="animationsDuration">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="suffix">
-             <string> ms</string>
+             <string> ms duration</string>
+            </property>
+            <property name="prefix">
+             <string/>
             </property>
             <property name="maximum">
              <number>500</number>
@@ -691,28 +716,11 @@
  </customwidgets>
  <tabstops>
   <tabstop>animationsEnabled</tabstop>
-  <tabstop>animationsDuration</tabstop>
  </tabstops>
  <resources>
   <include location="about.qrc"/>
  </resources>
  <connections>
-  <connection>
-   <sender>animationsEnabled</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>animationsDurationLabel</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>34</x>
-     <y>194</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>84</x>
-     <y>221</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>animationsEnabled</sender>
    <signal>toggled(bool)</signal>
@@ -726,6 +734,54 @@
     <hint type="destinationlabel">
      <x>141</x>
      <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>customColorBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>customColorSelect</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>382</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>414</x>
+     <y>383</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>customColorBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>matchTitleBarColor</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>382</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>414</x>
+     <y>341</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>customColorBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>labelMatchTitleBarColor</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>382</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>234</x>
+     <y>341</y>
     </hint>
    </hints>
   </connection>
