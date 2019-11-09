@@ -43,6 +43,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="whatsThis">
+      <string/>
+     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -70,6 +73,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="whatsThis">
+               <string extracomment="This adds a easy to click handle to windows that opt to not use borders."/>
+              </property>
               <property name="text">
                <string>Add handle to resize windows with no border</string>
               </property>
@@ -81,6 +87,9 @@
            <layout class="QHBoxLayout" name="horizontalLayout_12">
             <item>
              <widget class="QCheckBox" name="drawBorderOnMaximizedWindows">
+              <property name="whatsThis">
+               <string extracomment="If selected, maximized windows will use the border radius settings even when maximized."/>
+              </property>
               <property name="text">
                <string>Draw border on maximized windows</string>
               </property>
@@ -110,6 +119,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="whatsThis">
+               <string extracomment="Select a custom border radius to use on windows."/>
               </property>
               <property name="currentText">
                <string>None</string>
@@ -151,6 +163,9 @@
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item>
              <widget class="QCheckBox" name="customColorBox">
+              <property name="whatsThis">
+               <string extracomment="Use a custom color for all window's titlebars."/>
+              </property>
               <property name="text">
                <string>Use custom color</string>
               </property>
@@ -161,6 +176,9 @@
               <property name="enabled">
                <bool>false</bool>
               </property>
+              <property name="whatsThis">
+               <string extracomment="Select the color for all titlebars to use."/>
+              </property>
              </widget>
             </item>
            </layout>
@@ -169,6 +187,9 @@
            <layout class="QHBoxLayout" name="horizontalLayout_11">
             <item>
              <widget class="QCheckBox" name="drawTitleBarSeparator">
+              <property name="whatsThis">
+               <string extracomment="Draws a dark separator line between the titlebar and the window content. Uses the titlebar color to determine the color of itself."/>
+              </property>
               <property name="text">
                <string>Draw separator between titlebar and window</string>
               </property>
@@ -180,6 +201,9 @@
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
              <widget class="QCheckBox" name="drawBackgroundGradient">
+              <property name="whatsThis">
+               <string extracomment="Draw a subtle gradient across the titlebar."/>
+              </property>
               <property name="text">
                <string>Draw titlebar background gradient</string>
               </property>
@@ -216,6 +240,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="whatsThis">
+               <string extracomment="Choose where the title inside a titlebar should be displayed."/>
+              </property>
               <item>
                <property name="text">
                 <string>Left</string>
@@ -251,6 +278,9 @@
             </item>
             <item>
              <widget class="QComboBox" name="matchTitleBarColor">
+              <property name="whatsThis">
+               <string extracomment="Choose a color matching method. Please note that the last entry is highly unstable and experimental. If you want to color titlebars individually, please check out the window specific overrides section."/>
+              </property>
               <item>
                <property name="text">
                 <string>Color scheme</string>
@@ -281,6 +311,9 @@
             </item>
             <item>
              <widget class="QComboBox" name="titleBarHeight">
+              <property name="whatsThis">
+               <string extracomment="Choose the height of the titlebar with this switch."/>
+              </property>
               <item>
                <property name="text">
                 <string>Small</string>
@@ -332,6 +365,9 @@
             </item>
             <item>
              <widget class="QComboBox" name="buttonSize">
+              <property name="whatsThis">
+               <string extracomment="Choose your preferred size for the window buttons."/>
+              </property>
               <property name="currentText">
                <string>Tiny</string>
               </property>
@@ -381,6 +417,9 @@
               <property name="enabled">
                <bool>true</bool>
               </property>
+              <property name="whatsThis">
+               <string extracomment="Choose your preferred spacing for the window buttons."/>
+              </property>
               <property name="currentText">
                <string>Small</string>
               </property>
@@ -420,6 +459,9 @@
               <property name="enabled">
                <bool>true</bool>
               </property>
+              <property name="whatsThis">
+               <string extracomment="Choose your preferred distance to the window edge for the window buttons."/>
+              </property>
               <property name="currentText">
                <string>Small</string>
               </property>
@@ -446,6 +488,9 @@
            <layout class="QHBoxLayout" name="horizontalLayout_14">
             <item>
              <widget class="QCheckBox" name="alwaysShowButtonIcons">
+              <property name="whatsThis">
+               <string extracomment="Opt to always show the icons inside the window buttons instead of only showing them on hover."/>
+              </property>
               <property name="text">
                <string>Always show button icons</string>
               </property>
@@ -484,6 +529,9 @@
          <layout class="QGridLayout" name="gridLayout_8">
           <item row="0" column="0">
            <widget class="QCheckBox" name="animationsEnabled">
+            <property name="whatsThis">
+             <string extracomment="Enable or disable animations."/>
+            </property>
             <property name="text">
              <string>Enable transition animations</string>
             </property>
@@ -493,6 +541,9 @@
            <widget class="QSpinBox" name="animationsDuration">
             <property name="enabled">
              <bool>false</bool>
+            </property>
+            <property name="whatsThis">
+             <string extracomment="Sets a duration for the animations to play in milliseconds."/>
             </property>
             <property name="suffix">
              <string> ms duration</string>
@@ -515,12 +566,19 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="2" column="1">
-           <widget class="KColorButton" name="shadowColor"/>
+           <widget class="KColorButton" name="shadowColor">
+            <property name="whatsThis">
+             <string extracomment="Choose a color for the shadows to use."/>
+            </property>
+           </widget>
           </item>
           <item row="3" column="1">
            <widget class="QComboBox" name="inactiveShadowBehaviour">
             <property name="enabled">
              <bool>true</bool>
+            </property>
+            <property name="whatsThis">
+             <string extracomment="Select strength of inactive windows' shadows."/>
             </property>
             <item>
              <property name="text">
@@ -548,6 +606,9 @@
           </item>
           <item row="1" column="1">
            <widget class="QSpinBox" name="shadowStrength">
+            <property name="whatsThis">
+             <string extracomment="Select the intensity of the shadows. Higher strength means more pronounced shadows."/>
+            </property>
             <property name="suffix">
              <string>%</string>
             </property>
@@ -561,6 +622,9 @@
           </item>
           <item row="0" column="1">
            <widget class="QComboBox" name="shadowSize">
+            <property name="whatsThis">
+             <string extracomment="Select a size for shadows to draw under windows."/>
+            </property>
             <item>
              <property name="text">
               <string comment="@item:inlistbox Button size:">None</string>

@@ -189,7 +189,7 @@ namespace Breezeway
             // setup painter
             QPen pen( foregroundColor );
             pen.setCapStyle( Qt::RoundCap );
-            pen.setJoinStyle( Qt::MiterJoin );
+            pen.setJoinStyle( Qt::RoundJoin );
             pen.setWidthF( 1.3*qMax((qreal)1.0, 20/width ) );
 
             painter->setPen( pen );
@@ -200,8 +200,8 @@ namespace Breezeway
 
                 case DecorationButtonType::Close:
                 {
-                    painter->drawLine( 5, 5, 13, 13 );
-                    painter->drawLine( 13, 5, 5, 13 );
+                    painter->drawLine( 6, 6, 12, 12 );
+                    painter->drawLine( 12, 6, 6, 12 );
                     break;
                 }
 
@@ -232,7 +232,7 @@ namespace Breezeway
 
                 case DecorationButtonType::Minimize:
                 {
-                    painter->drawLine( 4, 9, 14, 9 );
+                    painter->drawLine( 5, 9, 13, 9 );
                     break;
                 }
 
@@ -340,13 +340,17 @@ namespace Breezeway
                 case DecorationButtonType::ContextHelp:
                 {
                     QPainterPath path;
+                    // move cursor to x 5, y 6
                     path.moveTo( 5, 6 );
+                    // construct path arc to (x 5, y 3.5, width 8, height 5), angle 180, sweep length -180
                     path.arcTo( QRectF( 5, 3.5, 8, 5 ), 180, -180 );
+                    // construct path cubic bezier from current position to x 9, y 11.5 with modifiers at
+                    // x 12.5, y 9.5 and x 9, y 7.5
                     path.cubicTo( QPointF(12.5, 9.5), QPointF( 9, 7.5 ), QPointF( 9, 11.5 ) );
+                    // follow finished path with brush
                     painter->drawPath( path );
-
+                    // this draws the dot of the question mark
                     painter->drawRect( QRectF( 9, 15, 0.5, 0.5 ) );
-
                     break;
                 }
 
@@ -443,9 +447,6 @@ namespace Breezeway
         } else if ( !c->isActive() ) {
 
             QColor color;
-            // TODO: needs to be adjusted for
-            // matching titlebar colors from
-            // dynamic window colors
             color = d->titleBarColor();
             int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
             if(y > 128) {
