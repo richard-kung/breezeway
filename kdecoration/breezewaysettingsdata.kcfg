@@ -187,6 +187,7 @@
       <default>231, 232, 235</default>
     </entry>
     
+    <!-- exceptions -->
     <!-- custom title color -->
     <entry name="CustomColorBoxEx" type = "Bool">
       <default>false</default>
@@ -197,6 +198,14 @@
     </entry>
 
     <entry name="ForceBrightFonts" type = "Bool">
+      <default>false</default>
+    </entry>
+
+    <entry name="InvertGradient" type = "Bool">
+      <default>false</default>
+    </entry>
+
+    <entry name="InvertSeparator" type = "Bool">
       <default>false</default>
     </entry>
 

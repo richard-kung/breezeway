@@ -64,6 +64,8 @@ namespace Breezeway
             configuration->setCustomColorBoxEx( exception.customColorBoxEx() );
             configuration->setCustomColorSelectEx( exception.customColorSelectEx() );
             configuration->setForceBrightFonts( exception.forceBrightFonts() );
+            configuration->setInvertGradient( exception.invertGradient() );
+            configuration->setInvertSeparator( exception.invertSeparator() );
             
             // append to exceptions
             _exceptions.append( configuration );
@@ -102,7 +104,7 @@ namespace Breezeway
     {
 
         // list of items to be written
-        QStringList keys = { "Enabled", "ExceptionPattern", "ExceptionType", "HideTitleBar", "Mask", "BorderSize", "CustomColorBoxEx", "CustomColorSelectEx", "ForceBrightFonts"};
+        QStringList keys = { "Enabled", "ExceptionPattern", "ExceptionType", "HideTitleBar", "Mask", "BorderSize", "CustomColorBoxEx", "CustomColorSelectEx", "ForceBrightFonts", "InvertGradient", "InvertSeparator"};
 
         // write all items
         foreach( auto key, keys )

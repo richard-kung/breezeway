@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>450</width>
-    <height>413</height>
+    <height>483</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -86,6 +86,30 @@
       <string>Decoration Options</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
+      <item row="4" column="1">
+       <widget class="KColorButton" name="customColorSelectEx">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="forceBrightFonts">
+        <property name="text">
+         <string>Force bright title bar fonts</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="customColorBoxEx">
+        <property name="locale">
+         <locale language="English" country="Germany"/>
+        </property>
+        <property name="text">
+         <string>Custom title bar color:</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="borderSizeComboBox">
         <property name="enabled">
@@ -138,27 +162,10 @@
         </item>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QCheckBox" name="customColorBoxEx">
-        <property name="locale">
-         <locale language="English" country="Germany"/>
-        </property>
-        <property name="text">
-         <string>Custom title bar color:</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0">
        <widget class="QCheckBox" name="borderSizeCheckBox">
         <property name="text">
          <string>Border size:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="KColorButton" name="customColorSelectEx">
-        <property name="enabled">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -169,15 +176,35 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QCheckBox" name="forceBrightFonts">
+      <item row="6" column="0" colspan="2">
+       <widget class="QCheckBox" name="invertGradient">
         <property name="text">
-         <string>Force bright title bar fonts</string>
+         <string>Invert global gradient settings</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QCheckBox" name="invertSeparator">
+        <property name="text">
+         <string>Invert global separator settings</string>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

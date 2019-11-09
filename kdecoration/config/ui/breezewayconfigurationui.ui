@@ -147,6 +147,46 @@
           <string>Titlebar</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
+          <item row="10" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <widget class="QCheckBox" name="customColorBox">
+              <property name="text">
+               <string>Use custom color</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="KColorButton" name="customColorSelect">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="13" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <item>
+             <widget class="QCheckBox" name="drawTitleBarSeparator">
+              <property name="text">
+               <string>Draw separator between titlebar and window</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="11" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QCheckBox" name="drawBackgroundGradient">
+              <property name="text">
+               <string>Draw titlebar background gradient</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
           <item row="4" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
@@ -200,31 +240,32 @@
             </item>
            </layout>
           </item>
-          <item row="11" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_9">
-            <item>
-             <widget class="QCheckBox" name="customColorBox">
+          <item row="9" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item alignment="Qt::AlignRight">
+             <widget class="QLabel" name="labelMatchTitleBarColor">
               <property name="text">
-               <string>Use custom color</string>
+               <string>Automatically match color:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="KColorButton" name="customColorSelect">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="12" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <widget class="QCheckBox" name="drawBackgroundGradient">
-              <property name="text">
-               <string>Draw titlebar background gradient</string>
-              </property>
+             <widget class="QComboBox" name="matchTitleBarColor">
+              <item>
+               <property name="text">
+                <string>Color scheme</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Window (scheme)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Window (BETA)</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>
@@ -255,47 +296,6 @@
                 <string>Extended</string>
                </property>
               </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="10" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
-            <item alignment="Qt::AlignRight">
-             <widget class="QLabel" name="labelMatchTitleBarColor">
-              <property name="text">
-               <string>Automatically match color:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="matchTitleBarColor">
-              <item>
-               <property name="text">
-                <string>Color scheme</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Window (scheme)</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Window (dynamic - EXPERIMENTAL)</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="14" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_11">
-            <item>
-             <widget class="QCheckBox" name="drawTitleBarSeparator">
-              <property name="text">
-               <string>Draw separator between titlebar and window</string>
-              </property>
              </widget>
             </item>
            </layout>
@@ -750,38 +750,6 @@
     <hint type="destinationlabel">
      <x>414</x>
      <y>383</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>customColorBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>matchTitleBarColor</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>148</x>
-     <y>382</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>414</x>
-     <y>341</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>customColorBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>labelMatchTitleBarColor</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>148</x>
-     <y>382</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>234</x>
-     <y>341</y>
     </hint>
    </hints>
   </connection>

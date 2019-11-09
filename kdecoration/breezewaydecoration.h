@@ -114,6 +114,8 @@ namespace Breezeway
         inline bool matchTitleBarColor( void ) const;
         inline bool customColorBoxEx() const;
         inline bool forceBrightFonts() const;
+        inline bool invertGradient() const;
+        inline bool invertSeparator() const;
         //@}
 
         public Q_SLOTS:
@@ -218,6 +220,12 @@ namespace Breezeway
 
     bool Decoration::forceBrightFonts() const
     { return m_internalSettings->forceBrightFonts(); }
+
+    bool Decoration::invertGradient() const
+    { return m_internalSettings->invertGradient(); }
+
+    bool Decoration::invertSeparator() const
+    { return m_internalSettings->invertSeparator(); }
 
 }
 

@@ -261,9 +261,12 @@ namespace Breezeway
     QColor Decoration::outlineColor() const
     {
         auto c( client().data() );
-        if( !m_internalSettings->drawTitleBarSeparator() ) return QColor();
-        if( c->isActive() ) return titleBarColor().lighter(70);
-        else return titleBarColor().lighter(85);
+        if( ( !m_internalSettings->drawTitleBarSeparator() && invertSeparator() ) || ( m_internalSettings->drawTitleBarSeparator() && !invertSeparator() ) ){
+            if( c->isActive() ) return titleBarColor().lighter(70);
+            else return titleBarColor().lighter(85);
+        } else { 
+            return QColor(); 
+        }
     }
 
     //________________________________________________________________
@@ -638,9 +641,8 @@ namespace Breezeway
         painter->save();
         painter->setPen(Qt::NoPen);
 
-        // render a linear gradient on titlebar
-        // including highlight area
-        if( m_internalSettings->drawBackgroundGradient() )
+        // render a linear gradient on titlebar including highlight area
+        if( ( m_internalSettings->drawBackgroundGradient() && !invertGradient() ) || ( !m_internalSettings->drawBackgroundGradient() && invertGradient() ) )
         {
             const QColor titleBarColor = ( this->titleBarColor() );
             QColor color = ( this->titleBarColor() );
@@ -654,8 +656,8 @@ namespace Breezeway
             gradient.setColorAt(0.8, titleBarColor.lighter(gv));
             painter->setBrush(gradient);
 
-        // if user doesn't want a gradient, we only paint
-        // highlight line and titlebar color
+        // if user doesn't want a gradient, we only paint highlight line
+        // and titlebar color
         } else {
             const QColor titleBarColor = ( this->titleBarColor() );
             QLinearGradient gradient(0, 0, 0, titleRect.height());
