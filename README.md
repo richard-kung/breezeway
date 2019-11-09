@@ -16,10 +16,11 @@ Looks great  with light and dark color schemes. Shown here with ![Arc](https://g
 | --- | --- |
 | Titlebars can use the color supplied by your system's color scheme... | ![](regularcolors.png?raw=true) |
 | ...or match the window color of your color scheme... | ![](colormatching.png?raw=true) |
-| ...or use a dynamic color picker to paint the titlebar and perfectly match even GTK applications! **Please note that this feature is highly unstable and experimental.** | ![](perfectcolor.png?raw=true) |
+| ...or use a dynamic color picker to paint the titlebar and perfectly match even GTK applications! **Please note that this feature is highly unstable and experimental.** Alternatively you can set this up manually, which is stable. | ![](perfectcolor.png?raw=true) |
 | Shadows and highlight lines make sure you don't lose track of your windows in low contrast environments. | ![](low_contrast.png?raw=true) |
 | Embrace flat design, or use gradients and a titlebar separator; your choice! BreezewayMod will use your chosen color profile to bring you a smooth interface that fits _your_ desktop. |  ![](gradients.png?raw=true) |
 | A nice, clean settings page gives you granular control over the theme's features. | ![](settings.gif?raw=true) |
+| Take customization to the next level with window specific settings, enabling you to mix and match settings and colors just the way you like it. | ![](window_settings.png?raw=true) |
 | Support for HiDPI screens comes out of the box as well. Just increase size of titlebar, buttons and border radius and you're all set. | ![](hidpi.png?raw=true)
 | Hovering over window buttons reveals additional icons. You can choose to also always show the icons. | ![](buttonicons.png?raw=true) |
 
@@ -110,3 +111,7 @@ A: There's a massive ongoing issue with the KDecoration2 framework which will tr
 **Q: But I really don't care about the glitches, I just want blur! How can I do this?**
 
 A: Find the `breezeway.json` file inside the `kdecoration` directory. [On line 12](https://github.com/n4n0GH/breezeway-mod/blob/master/kdecoration/breezeway.json#L12) you switch out `"blur": false,` with `"blur": true,` and then compile the theme according to the instructions. 
+
+**Q: Does this work on Wayland?**
+
+A: Maybe. Some functions may not work out of the box and if scaling is used the theme will most likely break. Once Wayland is stable on my own system, I'll get around to fix that though. But as of now you're on your own.
