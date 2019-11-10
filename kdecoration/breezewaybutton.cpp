@@ -378,9 +378,25 @@ namespace Breezeway
 
             return d->titleBarColor();
 
-        } else if( d->internalSettings()->alwaysShowButtonIcons() ){
-            
-            return QColor(colorSymbol);
+        } else if( d->internalSettings()->alwaysShowButtonIcons() || isHovered() ){
+            auto c = d->client().data();
+            if ( c->isActive() ){
+                QColor color;
+                if( type() == DecorationButtonType::Close ) {
+                    color.setRgb(colorClose);
+                } else if( type() == DecorationButtonType::Maximize ) {
+                    color.setRgb(colorMaximize);
+                } else if( type() == DecorationButtonType::Minimize ) {
+                    color.setRgb(colorMinimize);
+                } else {
+                    color.setRgb(colorOther);
+                }
+                return color.lighter(40);
+            } else {
+                QColor color;
+                color = d->titleBarColor();
+                return color.lighter(60);
+            }
 
         } else if( m_animation->state() == QPropertyAnimation::Running ) {
 
@@ -403,11 +419,13 @@ namespace Breezeway
             }
             return KColorUtils::mix( color, QColor(colorSymbol), m_opacity );
 
-        } else if( isHovered() ) {
+        } 
+        // else if( isHovered() ) {
 
-            return QColor(colorSymbol);
+        //     return QColor(colorSymbol);
 
-        } else {
+        // } 
+        else {
 
             return backgroundColor();
 
