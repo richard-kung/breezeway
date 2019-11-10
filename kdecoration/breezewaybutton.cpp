@@ -81,17 +81,17 @@ namespace Breezeway
             {
 
                 case DecorationButtonType::Close:
-                b->setVisible( d->client().data()->isCloseable() );
+                b->setVisible( d->client().data() );
                 QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::closeableChanged, b, &Breezeway::Button::setVisible );
                 break;
 
                 case DecorationButtonType::Maximize:
-                b->setVisible( d->client().data()->isMaximizeable() );
+                b->setVisible( d->client().data() );
                 QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::maximizeableChanged, b, &Breezeway::Button::setVisible );
                 break;
 
                 case DecorationButtonType::Minimize:
-                b->setVisible( d->client().data()->isMinimizeable() );
+                b->setVisible( d->client().data() );
                 QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::minimizeableChanged, b, &Breezeway::Button::setVisible );
                 break;
 
@@ -479,11 +479,44 @@ namespace Breezeway
 
             QColor color;
             if( type() == DecorationButtonType::Close ) {
-                color.setRgb(colorClose);
+                if(!c->isCloseable()){
+                    QColor color;
+                    color = d->titleBarColor();
+                    int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+                    if(y > 128) {
+                        return color.lighter(85);
+                    } else {
+                        return color.lighter(145);
+                    }
+                } else {
+                    color.setRgb(colorClose);
+                }
             } else if( type() == DecorationButtonType::Maximize ) {
-                color.setRgb(colorMaximize);
+                if(!c->isMaximizeable()){
+                    QColor color;
+                    color = d->titleBarColor();
+                    int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+                    if(y > 128) {
+                        return color.lighter(85);
+                    } else {
+                        return color.lighter(145);
+                    }
+                } else {
+                    color.setRgb(colorMaximize);
+                }
             } else if( type() == DecorationButtonType::Minimize ) {
-                color.setRgb(colorMinimize);
+                if(!c->isMinimizeable()){
+                    QColor color;
+                    color = d->titleBarColor();
+                    int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+                    if(y > 128) {
+                        return color.lighter(85);
+                    } else {
+                        return color.lighter(145);
+                    } 
+                } else {
+                    color.setRgb(colorMinimize);
+                }
             } else {
                 color.setRgb(colorOther);
             }
