@@ -26,13 +26,28 @@ Looks great  with light and dark color schemes. Shown here with ![Arc](https://g
 
 ## Building and Installation
 
+### Automated Installation
+
+Thanks to nice people on the internet, you can make use of easy and automated build processes. If your distribution is not listed here, [check out how to build from source](#manual-installation).
+
+Note: I don't maintain any of these so make sure you check out the package source before blindly installing them.
+
+#### Arch Linux / AUR
+
+```
+yay -S breezeway-mod-git
+```
+Source: https://aur.archlinux.org/packages/breezeway-mod-git/ by ToxicSalt
+
+### Manual Installation
+
 Before proceeding with the actual installation process, make sure you have the following dependencies installed:
 
 * cmake
 * g++ / clang
 * extra-cmake-modules
 * libkdecorations2-dev
-* ibkf5guiaddons-dev
+* libkf5guiaddons-dev
 * libkf5configwidgets-dev
 * libkf5windowsystem-dev
 * libkf5package-dev

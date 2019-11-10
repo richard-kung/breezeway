@@ -401,6 +401,8 @@ namespace Breezeway
         } else if( m_animation->state() == QPropertyAnimation::Running ) {
 
             auto c = d->client().data();
+            // TODO: when windows are inactive there's a noticeable "jump" 
+            // in color from the calculated color to the static color
             if ( !c->isActive() ) {
                 QColor color(colorSymbol);
                 color.setAlpha(255*m_opacity);
