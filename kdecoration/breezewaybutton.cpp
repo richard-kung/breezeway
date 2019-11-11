@@ -81,7 +81,7 @@ namespace Breezeway
             {
 
                 case DecorationButtonType::Close:
-                b->setVisible( d->client().data() );
+                b->setVisible( d->client().data()->isCloseable() );
                 QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::closeableChanged, b, &Breezeway::Button::setVisible );
                 break;
 
@@ -91,7 +91,7 @@ namespace Breezeway
                 break;
 
                 case DecorationButtonType::Minimize:
-                b->setVisible( d->client().data() );
+                b->setVisible( d->client().data()->isMinimizeable() );
                 QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::minimizeableChanged, b, &Breezeway::Button::setVisible );
                 break;
 
@@ -399,14 +399,13 @@ namespace Breezeway
             }
 
         } else if( m_animation->state() == QPropertyAnimation::Running ) {
-
+            
             auto c = d->client().data();
-            // TODO: when windows are inactive there's a noticeable "jump" 
-            // in color from the calculated color to the static color
             if ( !c->isActive() ) {
-                QColor color(colorSymbol);
+                QColor color;
+                color = d->titleBarColor();
                 color.setAlpha(255*m_opacity);
-                return color;
+                return color.lighter(60);
             }
 
             QColor color;
@@ -419,7 +418,7 @@ namespace Breezeway
             } else {
                 color.setRgb(colorOther);
             }
-            return KColorUtils::mix( color, QColor(colorSymbol), m_opacity );
+            return KColorUtils::mix( color, color.lighter(60), m_opacity );
 
         } 
         // else if( isHovered() ) {
