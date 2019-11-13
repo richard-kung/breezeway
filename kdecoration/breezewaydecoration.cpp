@@ -222,38 +222,6 @@ namespace Breezeway
             case 1:
                 // use window color as titlebar color
                 return c->palette().color(QPalette::Window);
-            case 2:
-                // pick colorscheme from visible pixels outside of titlebar
-                // NOTE: this works with the following drawbacks:
-                // on program start, the window space is allocated before
-                // the window is rendered, thus making the QColor whatever
-                // underlying color it finds on start
-                // on refocus and drag the color will most likely be wrong
-                // as well, performance also takes a massive hit with this
-                // setting turned on
-                // TODO: read more about QPixmap optimization (in specific
-                // how the cache works -> see QPixmapCache::clear()
-                // TODO: find a way to make this a one-time event on start,
-                // keeping the value until window is deleted
-                int winTarget(c->windowId());
-                // TODO: QScreen needs to function, as the other
-                // function is deprecated and creates a shitton
-                // of log messages in terminal which slows down
-                // the buffer RIP optimization I guess
-                // SEE: https://doc.qt.io/qt-5/qscreen.html#grabWindow
-                const QPixmap qPix = QPixmap::grabWindow(winTarget);
-                QImage image(qPix.toImage());
-                // NOTE: offset of 1 is needed to circumvent
-                // clients drawing 1px borders by themselves
-                // setting the titlebar color with the borders
-                // NOTE: needs some work to prevent applications
-                // like systemsettings to color the titlebar in 
-                // the colorscheme's highlight color, maybe try
-                // getting an average of several checkpoints?
-                // and maybe check back against the default
-                // QPalette::Window return to get a failsafe?
-                const QColor matchedTitleBarColor(image.pixel(1, 3));
-                return matchedTitleBarColor;
         }
     }
 

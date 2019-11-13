@@ -16,7 +16,7 @@ Looks great  with light and dark color schemes. Shown here with ![Arc](https://g
 | --- | --- |
 | Titlebars can use the color supplied by your system's color scheme... | ![](regularcolors.png?raw=true) |
 | ...or match the window color of your color scheme... | ![](colormatching.png?raw=true) |
-| ...or use a dynamic color picker to paint the titlebar and perfectly match even GTK applications! **Please note that this feature is highly unstable and experimental.** Alternatively you can set this up manually, which is stable. | ![](perfectcolor.png?raw=true) |
+| ...or manually use a custom color picker to paint the titlebar and perfectly match even GTK applications! | ![](perfectcolor.png?raw=true) |
 | Shadows and highlight lines make sure you don't lose track of your windows in low contrast environments. | ![](low_contrast.png?raw=true) |
 | Embrace flat design, or use gradients and a titlebar separator; your choice! BreezewayMod will use your chosen color profile to bring you a smooth interface that fits _your_ desktop. |  ![](gradients.png?raw=true) |
 | A nice, clean settings page gives you granular control over the theme's features. | ![](settings.gif?raw=true) |
