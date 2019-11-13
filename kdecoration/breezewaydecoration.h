@@ -116,6 +116,7 @@ namespace Breezeway
         inline bool forceBrightFonts() const;
         inline bool invertGradient() const;
         inline bool invertSeparator() const;
+        inline bool drawHighlight() const;
         //@}
 
         public Q_SLOTS:
@@ -226,6 +227,9 @@ namespace Breezeway
 
     bool Decoration::invertSeparator() const
     { return m_internalSettings->invertSeparator(); }
+
+    bool Decoration::drawHighlight() const
+    { return m_internalSettings->drawHighlight(); }
 
 }
 

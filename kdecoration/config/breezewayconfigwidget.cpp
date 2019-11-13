@@ -62,6 +62,7 @@ namespace Breezeway
         connect( m_ui.alwaysShowButtonIcons, SIGNAL(clicked()), SLOT(updateChanged()) );
         connect( m_ui.customColorBox, SIGNAL(clicked()), SLOT(updateChanged()) );
         connect( m_ui.customColorSelect, SIGNAL(changed(QColor)), SLOT(updateChanged()) );
+        connect( m_ui.drawHighlight, SIGNAL(clicked()), SLOT(updateChanged()) );
 
         // track animations changes
         connect( m_ui.animationsEnabled, SIGNAL(clicked()), SLOT(updateChanged()) );
@@ -104,6 +105,7 @@ namespace Breezeway
         m_ui.alwaysShowButtonIcons->setChecked( m_internalSettings->alwaysShowButtonIcons() );
         m_ui.customColorBox->setChecked( m_internalSettings->customColorBox() );
         m_ui.customColorSelect->setColor( m_internalSettings->customColorSelect() );
+        m_ui.drawHighlight->setChecked( m_internalSettings->drawHighlight() );
 
         // load shadows
         if( m_internalSettings->shadowSize() <= InternalSettings::ShadowVeryLarge ) m_ui.shadowSize->setCurrentIndex( m_internalSettings->shadowSize() );
@@ -148,6 +150,7 @@ namespace Breezeway
         m_internalSettings->setAlwaysShowButtonIcons( m_ui.alwaysShowButtonIcons->isChecked() );
         m_internalSettings->setCustomColorBox( m_ui.customColorBox->isChecked() );
         m_internalSettings->setCustomColorSelect( m_ui.customColorSelect->color() );
+        m_internalSettings->setDrawHighlight( m_ui.drawHighlight->isChecked() );
 
         m_internalSettings->setShadowSize( m_ui.shadowSize->currentIndex() );
         m_internalSettings->setShadowStrength( qRound( qreal(m_ui.shadowStrength->value()*255)/100 ) );
@@ -205,6 +208,7 @@ namespace Breezeway
         m_ui.alwaysShowButtonIcons->setChecked( m_internalSettings->alwaysShowButtonIcons() );
         m_ui.customColorBox->setChecked( m_internalSettings->customColorBox() );
         m_ui.customColorSelect->setColor( m_internalSettings->customColorSelect() );
+        m_ui.drawHighlight->setChecked( m_internalSettings->drawHighlight() );
 
         m_ui.shadowSize->setCurrentIndex( m_internalSettings->shadowSize() );
         m_ui.shadowStrength->setValue( qRound(qreal(m_internalSettings->shadowStrength()*100)/255 ) );
@@ -239,6 +243,7 @@ namespace Breezeway
         else if( m_ui.alwaysShowButtonIcons->isChecked() != m_internalSettings->alwaysShowButtonIcons() ) modified = true;
         else if( m_ui.customColorBox->isChecked() != m_internalSettings->customColorBox() ) modified = true;
         else if( m_ui.customColorSelect->color() != m_internalSettings->customColorSelect() ) modified = true;
+        else if( m_ui.drawHighlight->isChecked() != m_internalSettings->drawHighlight() ) modified = true;
 
         // animations
         else if( m_ui.animationsEnabled->isChecked() !=  m_internalSettings->animationsEnabled() ) modified = true;

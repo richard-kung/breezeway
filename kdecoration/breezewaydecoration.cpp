@@ -358,7 +358,6 @@ namespace Breezeway
 
         createButtons();
         createShadow();
-        // createOutline();
     }
 
     //________________________________________________________________
@@ -627,14 +626,30 @@ namespace Breezeway
             painter->restore();
         }
 
+        // draw highlight box
+        // NOTE: box is drawn correctly along the edges but is
+        // overlayed by the content of a window -> if 'no borders'
+        // setting is used, this will make the line stop after
+        // the titlebar, making it look unfinished
+        if( drawHighlight() ){
+            const QColor titleBarColor = (  this->titleBarColor() );
+            const QRect windowRect( 
+                QPoint(0, 0), 
+                QSize( size().width(), size().height() ) );
+            QColor sharpColor = titleBarColor.lighter(200);
+            sharpColor.setAlpha(102);
+            painter->setBrush( Qt::NoBrush );
+            painter->setPen( sharpColor );
+            painter->drawRoundedRect(windowRect, customRadius(), customRadius());
+        }
     }
 
     //________________________________________________________________
     void Decoration::paintTitleBar(QPainter *painter, const QRect &repaintRegion)
     {
         const auto c = client().data();
-        // const QColor matchedTitleBarColor(c->palette().color(QPalette::Window));
         const QRect titleRect(QPoint(0, 0), QSize(size().width(), borderTop()));
+        const QColor titleBarColor = (  this->titleBarColor() );
 
         if ( !titleRect.intersects(repaintRegion) ) return;
 
@@ -644,7 +659,6 @@ namespace Breezeway
         // render a linear gradient on titlebar including highlight area
         if( ( m_internalSettings->drawBackgroundGradient() && !invertGradient() ) || ( !m_internalSettings->drawBackgroundGradient() && invertGradient() ) )
         {
-            const QColor titleBarColor = ( this->titleBarColor() );
             QColor color = ( this->titleBarColor() );
             int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
             const int lfv = y > 128? 104: 110;
@@ -659,7 +673,6 @@ namespace Breezeway
         // if user doesn't want a gradient, we only paint highlight line
         // and titlebar color
         } else {
-            const QColor titleBarColor = ( this->titleBarColor() );
             QLinearGradient gradient(0, 0, 0, titleRect.height());
             gradient.setColorAt(0.0, titleBarColor.lighter(185));
             gradient.setColorAt(0.04, titleBarColor);
@@ -697,7 +710,7 @@ namespace Breezeway
         const QColor outlineColor( this->outlineColor() );
         if( !c->isShaded() && outlineColor.isValid() )
         {
-            // outline
+            // titlebar separator line
             painter->setRenderHint( QPainter::Antialiasing, false );
             painter->setBrush( Qt::NoBrush );
             painter->setPen( outlineColor );
@@ -716,6 +729,7 @@ namespace Breezeway
         // draw all buttons
         m_leftButtons->paint(painter, repaintRegion);
         m_rightButtons->paint(painter, repaintRegion);
+
     }
 
     //________________________________________________________________
@@ -844,13 +858,6 @@ namespace Breezeway
     }
 
     //________________________________________________________________
-    // void Decoration::createOutline()
-    // {
-    //     // reserved for proper in-set highlight
-    //     // reference line ~830
-    // }
-
-    //________________________________________________________________
     void Decoration::createShadow()
     {
         QSharedPointer<KDecoration2::DecorationShadow> sShadow;
@@ -860,6 +867,7 @@ namespace Breezeway
         } else {
             sShadow = g_sInactiveShadow;
         }
+
         if (!sShadow
                 ||g_shadowSizeEnum != m_internalSettings->shadowSize()
                 || g_shadowStrength != m_internalSettings->shadowStrength()
@@ -893,6 +901,8 @@ namespace Breezeway
             shadowRenderer.setDevicePixelRatio(1.0); // TODO: Create HiDPI shadows?
 
             qreal strength = static_cast<qreal>(g_shadowStrength) / 255.0;
+
+            // set shadow strength values for inactive windows
             if ( !c->isActive() ) {
                 if(m_internalSettings->inactiveShadowBehaviour() == 0){
                     strength /= 2;
@@ -916,6 +926,8 @@ namespace Breezeway
 
             QRect boxRect(QPoint(0, 0), boxSize);
             boxRect.moveCenter(outerRect.center());
+
+            const QRect titleRect(QPoint(0, 0), QSize(size().width(), borderTop()));
 
             // Mask out inner rect.
             const QMargins padding = QMargins(
@@ -943,28 +955,6 @@ namespace Breezeway
                 outerRect.right() - boxRect.right() - Metrics::Shadow_Overlap + params.offset.x() + 1,
                 outerRect.bottom() - boxRect.bottom() - Metrics::Shadow_Overlap + params.offset.y() + 1);
             const QRect overRect = outerRect - b_padding; // test and see what this draws
-
-            // test to see if we can force another qframe ontop
-            // QFrame  *frame = new QFrame();
-            // frame->setFrameStyle(QFrame::Box | QFrame::Plain);
-            // frame->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowTransparentForInput | Qt::WindowDoesNotAcceptFocus | Qt::WindowStaysOnTopHint);
-            // frame->setGeometry(params.offset.x(), params.offset.y() , 600,300);    
-            // Just some fixed values to test
-            // Set a solid green thick border.
-            // frame->setObjectName("testframe");
-            // frame->setStyleSheet("#testframe {border: 5px solid green;}");
-            // // IMPORTANT: A QRegion's coordinates are relative to the widget it's used in. This is not documented.
-            // QRegion wholeFrameRegion(0,0,600,300);
-            // QRegion innerFrameRegion = wholeFrameRegion.subtracted(QRegion(5,5,590,290));
-            // frame->setMask(innerFrameRegion);
-            // frame->setWindowOpacity(0.5);
-            // frame->show();
-            // NOTE: above code works and will create a green box that
-            // enables a click-through behaviour. I'll use this to
-            // create a macOS-like 2 pixel border around the window
-            // NOTE: above code will only draw the rect area when 
-            // navigating the window decoration selection inside the
-            // appearance settings
 
             // this is the basecolor for the highlight
             static QColor b_highlight = Qt::white;
