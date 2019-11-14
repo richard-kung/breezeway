@@ -2,6 +2,14 @@
 
 <h1 align="center">BreezewayMod</h1>
 
+**Please note that this commit will be the last commit to this repository. In the process of rebranding this theme I created a new collection so everything is neatly packed into one place. Updates to this decoration will be made over there.**
+
+**Open issues have been transferred to the new repository already**
+
+**Find the new repository at https://github.com/n4n0GH/hello**
+
+(At the time of writing the repository was still private)
+
 **BreezewayMod** is a fork of the ![Breezeway](https://github.com/richard-kung/breezeway) window decoration, which aims to mimic macOS' window decorations, but with **power ups**.
 
 It also works great with the ![KDE-Rounded-Corners](https://github.com/n4n0GH/KDE-Rounded-Corners) KWin script.

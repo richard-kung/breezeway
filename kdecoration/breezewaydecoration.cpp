@@ -206,7 +206,7 @@ namespace Breezeway
         {
             return m_internalSettings->customColorSelect();
         }
-        // if one of the automatic settings are used
+        // if one of the automatic settings is used
         else switch( m_internalSettings->matchTitleBarColor() )
         {
             default:
