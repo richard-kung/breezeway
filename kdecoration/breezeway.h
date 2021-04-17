@@ -38,13 +38,23 @@ namespace Breezeway
     {
 
         //* corner radius (pixels)
-        Frame_FrameRadius = 3,
+        Frame_FrameRadiusNone = 0,
+        Frame_FrameRadiusTiny = 3,
+        Frame_FrameRadius = 5,
+        Frame_FrameRadiusExtended = 7,
 
         //* titlebar metrics, in units of small spacing
-        TitleBar_TopMargin = 2,
-        TitleBar_BottomMargin = 2,
-        TitleBar_SideMargin = 3,
-        TitleBar_ButtonSpacing = 3,
+        TitleBar_MarginSmall = 1,
+        TitleBar_Margin = 3,
+        TitleBar_MarginLarge = 5,
+        TitleBar_TopMargin = 3,
+        TitleBar_BottomMargin = 3,
+        TitleBar_SideMarginSmall = 2,
+        TitleBar_SideMargin = 4,
+        TitleBar_SideMarginLarge = 6,
+        TitleBar_ButtonSpacingSmall = 2,
+        TitleBar_ButtonSpacing = 4,
+        TitleBar_ButtonSpacingLarge = 6,
 
         // shadow dimensions (pixels)
         Shadow_Overlap = 3,

@@ -86,7 +86,7 @@ namespace Breezeway
                 break;
 
                 case DecorationButtonType::Maximize:
-                b->setVisible( d->client().data()->isMaximizeable() );
+                b->setVisible( d->client().data() );
                 QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::maximizeableChanged, b, &Breezeway::Button::setVisible );
                 break;
 
@@ -189,7 +189,7 @@ namespace Breezeway
             // setup painter
             QPen pen( foregroundColor );
             pen.setCapStyle( Qt::RoundCap );
-            pen.setJoinStyle( Qt::MiterJoin );
+            pen.setJoinStyle( Qt::RoundJoin );
             pen.setWidthF( 1.3*qMax((qreal)1.0, 20/width ) );
 
             painter->setPen( pen );
@@ -200,8 +200,8 @@ namespace Breezeway
 
                 case DecorationButtonType::Close:
                 {
-                    painter->drawLine( 5, 5, 13, 13 );
-                    painter->drawLine( 13, 5, 5, 13 );
+                    painter->drawLine( 6, 6, 12, 12 );
+                    painter->drawLine( 12, 6, 6, 12 );
                     break;
                 }
 
@@ -210,29 +210,29 @@ namespace Breezeway
                     if( isChecked() )
                     {
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 11, 4 ),
-                            QPointF( 11, 7 ),
-                            QPointF( 14, 7 )} );
+                            QPointF( 10, 5 ),
+                            QPointF( 10, 8 ),
+                            QPointF( 13, 8 )} );
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 4, 11 ),
-                            QPointF( 7, 11 ),
-                            QPointF( 7, 14 )} );
+                            QPointF( 5, 10 ),
+                            QPointF( 8, 10 ),
+                            QPointF( 8, 13 )} );
                     } else {
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 8, 5 ),
-                            QPointF( 13, 5 ),
-                            QPointF( 13, 10 )} );
+                            QPointF( 9, 6 ),
+                            QPointF( 12, 6 ),
+                            QPointF( 12, 9 )} );
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 10, 13 ),
-                            QPointF( 5, 13 ),
-                            QPointF( 5, 8 )} );
+                            QPointF( 9, 12 ),
+                            QPointF( 6, 12 ),
+                            QPointF( 6, 9 )} );
                     }
                     break;
                 }
 
                 case DecorationButtonType::Minimize:
                 {
-                    painter->drawLine( 4, 9, 14, 9 );
+                    painter->drawLine( 5, 9, 13, 9 );
                     break;
                 }
 
@@ -340,13 +340,17 @@ namespace Breezeway
                 case DecorationButtonType::ContextHelp:
                 {
                     QPainterPath path;
+                    // move cursor to x 5, y 6
                     path.moveTo( 5, 6 );
+                    // construct path arc to (x 5, y 3.5, width 8, height 5), angle 180, sweep length -180
                     path.arcTo( QRectF( 5, 3.5, 8, 5 ), 180, -180 );
+                    // construct path cubic bezier from current position to x 9, y 11.5 with modifiers at
+                    // x 12.5, y 9.5 and x 9, y 7.5
                     path.cubicTo( QPointF(12.5, 9.5), QPointF( 9, 7.5 ), QPointF( 9, 11.5 ) );
+                    // follow finished path with brush
                     painter->drawPath( path );
-
+                    // this draws the dot of the question mark
                     painter->drawRect( QRectF( 9, 15, 0.5, 0.5 ) );
-
                     break;
                 }
 
@@ -374,13 +378,34 @@ namespace Breezeway
 
             return d->titleBarColor();
 
-        } else if( m_animation->state() == QPropertyAnimation::Running ) {
+        } else if( d->internalSettings()->alwaysShowButtonIcons() || isHovered() ){
+            auto c = d->client().data();
+            if ( c->isActive() ){
+                QColor color;
+                if( type() == DecorationButtonType::Close ) {
+                    color.setRgb(colorClose);
+                } else if( type() == DecorationButtonType::Maximize ) {
+                    color.setRgb(colorMaximize);
+                } else if( type() == DecorationButtonType::Minimize ) {
+                    color.setRgb(colorMinimize);
+                } else {
+                    color.setRgb(colorOther);
+                }
+                return color.lighter(40);
+            } else {
+                QColor color;
+                color = d->titleBarColor();
+                return color.lighter(60);
+            }
 
+        } else if( m_animation->state() == QPropertyAnimation::Running ) {
+            
             auto c = d->client().data();
             if ( !c->isActive() ) {
-                QColor color(colorSymbol);
+                QColor color;
+                color = d->titleBarColor();
                 color.setAlpha(255*m_opacity);
-                return color;
+                return color.lighter(60);
             }
 
             QColor color;
@@ -393,13 +418,15 @@ namespace Breezeway
             } else {
                 color.setRgb(colorOther);
             }
-            return KColorUtils::mix( color, QColor(colorSymbol), m_opacity );
+            return KColorUtils::mix( color, color.lighter(60), m_opacity );
 
-        } else if( isHovered() ) {
+        } 
+        // else if( isHovered() ) {
 
-            return QColor(colorSymbol);
+        //     return QColor(colorSymbol);
 
-        } else {
+        // } 
+        else {
 
             return backgroundColor();
 
@@ -439,18 +466,56 @@ namespace Breezeway
         } else if ( !c->isActive() ) {
 
             QColor color;
-            color.setRgb(colorInactive);
-            return color;
+            color = d->titleBarColor();
+            int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+            if(y > 128) {
+                return color.lighter(85);
+            } else {
+                return color.lighter(145);
+            }
 
         } else {
 
             QColor color;
             if( type() == DecorationButtonType::Close ) {
-                color.setRgb(colorClose);
+                if(!c->isCloseable()){
+                    QColor color;
+                    color = d->titleBarColor();
+                    int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+                    if(y > 128) {
+                        return color.lighter(85);
+                    } else {
+                        return color.lighter(145);
+                    }
+                } else {
+                    color.setRgb(colorClose);
+                }
             } else if( type() == DecorationButtonType::Maximize ) {
-                color.setRgb(colorMaximize);
+                if(!c->isMaximizeable()){
+                    QColor color;
+                    color = d->titleBarColor();
+                    int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+                    if(y > 128) {
+                        return color.lighter(85);
+                    } else {
+                        return color.lighter(145);
+                    }
+                } else {
+                    color.setRgb(colorMaximize);
+                }
             } else if( type() == DecorationButtonType::Minimize ) {
-                color.setRgb(colorMinimize);
+                if(!c->isMinimizeable()){
+                    QColor color;
+                    color = d->titleBarColor();
+                    int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+                    if(y > 128) {
+                        return color.lighter(85);
+                    } else {
+                        return color.lighter(145);
+                    } 
+                } else {
+                    color.setRgb(colorMinimize);
+                }
             } else {
                 color.setRgb(colorOther);
             }

@@ -70,6 +70,18 @@ namespace Breezeway
         //* button height
         int buttonHeight() const;
 
+        // button spacing
+        int customButtonSpacing() const;
+
+        // button margin
+        int customButtonMargin() const;
+
+        // border radius
+        int customRadius() const;
+
+        // title bar height
+        int customTitleBarHeight() const;
+
         //*@name active state change animation
         //@{
         void setOpacity( qreal );
@@ -84,6 +96,7 @@ namespace Breezeway
         QColor titleBarColor() const;
         QColor outlineColor() const;
         QColor fontColor() const;
+        QColor customTitleBarColor() const;
         //@}
 
         //*@name maximization modes
@@ -98,6 +111,12 @@ namespace Breezeway
         inline bool isBottomEdge() const;
 
         inline bool hideTitleBar() const;
+        inline bool matchTitleBarColor( void ) const;
+        inline bool customColorBoxEx() const;
+        inline bool forceBrightFonts() const;
+        inline bool invertGradient() const;
+        inline bool invertSeparator() const;
+        inline bool drawHighlight() const;
         //@}
 
         public Q_SLOTS:
@@ -193,6 +212,24 @@ namespace Breezeway
 
     bool Decoration::hideTitleBar() const
     { return m_internalSettings->hideTitleBar() && !client().data()->isShaded(); }
+
+    bool Decoration::matchTitleBarColor() const
+    { return m_internalSettings->matchTitleBarColor(); }
+    
+    bool Decoration::customColorBoxEx() const
+    { return m_internalSettings->customColorBoxEx(); }
+
+    bool Decoration::forceBrightFonts() const
+    { return m_internalSettings->forceBrightFonts(); }
+
+    bool Decoration::invertGradient() const
+    { return m_internalSettings->invertGradient(); }
+
+    bool Decoration::invertSeparator() const
+    { return m_internalSettings->invertSeparator(); }
+
+    bool Decoration::drawHighlight() const
+    { return m_internalSettings->drawHighlight(); }
 
 }
 

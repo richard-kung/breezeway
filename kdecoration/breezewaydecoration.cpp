@@ -193,46 +193,79 @@ namespace Breezeway
     //________________________________________________________________
     QColor Decoration::titleBarColor() const
     {
-
         auto c = client().data();
         if( hideTitleBar() ) return c->color( ColorGroup::Inactive, ColorRole::TitleBar );
-        else if( m_animation->state() == QPropertyAnimation::Running )
+        
+        // if user specified a custom color per window
+        else if ( customColorBoxEx() )
         {
-            return KColorUtils::mix(
-                c->color( ColorGroup::Inactive, ColorRole::TitleBar ),
-                c->color( ColorGroup::Active, ColorRole::TitleBar ),
-                m_opacity );
-        } else return c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::TitleBar );
-
+            return m_internalSettings->customColorSelectEx();
+        }
+        // if users want to specify their own color values
+        else if ( m_internalSettings->customColorBox() )
+        {
+            return m_internalSettings->customColorSelect();
+        }
+        // if one of the automatic settings is used
+        else switch( m_internalSettings->matchTitleBarColor() )
+        {
+            default:
+            case 0:
+                // get titlebar color as specified by the color scheme
+                if( m_animation->state() == QPropertyAnimation::Running )
+                {
+                    return KColorUtils::mix(
+                        c->color( ColorGroup::Inactive, ColorRole::TitleBar ),
+                        c->color( ColorGroup::Active, ColorRole::TitleBar ),
+                        m_opacity );
+                } else return c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::TitleBar );
+            case 1:
+                // use window color as titlebar color
+                return c->palette().color(QPalette::Window);
+        }
     }
 
     //________________________________________________________________
     QColor Decoration::outlineColor() const
     {
-
         auto c( client().data() );
-        if( !m_internalSettings->drawTitleBarSeparator() ) return QColor();
-        if( m_animation->state() == QPropertyAnimation::Running )
-        {
-            QColor color( c->palette().color( QPalette::Highlight ) );
-            color.setAlpha( color.alpha()*m_opacity );
-            return color;
-        } else if( c->isActive() ) return c->palette().color( QPalette::Highlight );
-        else return QColor();
+        if( ( !m_internalSettings->drawTitleBarSeparator() && invertSeparator() ) || ( m_internalSettings->drawTitleBarSeparator() && !invertSeparator() ) ){
+            if( c->isActive() ) return titleBarColor().lighter(70);
+            else return titleBarColor().lighter(85);
+        } else { 
+            return QColor(); 
+        }
     }
 
     //________________________________________________________________
     QColor Decoration::fontColor() const
     {
-
+        const QRgb brightFont = 0xFFFFFFFF;
+        QColor color = ( this->titleBarColor() );
+        int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+        QColor newFont ( forceBrightFonts() ? brightFont : y > 128 ? color.lighter(40) : brightFont );
         auto c = client().data();
         if( m_animation->state() == QPropertyAnimation::Running )
         {
-            return KColorUtils::mix(
-                c->color( ColorGroup::Inactive, ColorRole::Foreground ),
-                c->color( ColorGroup::Active, ColorRole::Foreground ),
-                m_opacity );
-        } else return  c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::Foreground );
+            if ( m_internalSettings->matchTitleBarColor() || customColorBoxEx() ){
+                return KColorUtils::mix(
+                    forceBrightFonts() ? color.lighter(140) : y > 128 ? newFont.lighter(140) : color.lighter(140),
+                    newFont,
+                    m_opacity );
+            } else {
+                return KColorUtils::mix(
+                    c->color(ColorGroup::Inactive, ColorRole::Foreground ),
+                    c->color(ColorGroup::Active, ColorRole::Foreground ),
+                    m_opacity );
+            }
+        } else {
+            if ( m_internalSettings->matchTitleBarColor() || customColorBoxEx() ){
+                return c->isActive() ? newFont : forceBrightFonts() ? color.lighter(140) : y > 128 ? newFont.lighter(140) : color.lighter(140);
+            } else {
+                return  c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::Foreground );
+
+            }
+        }
 
     }
 
@@ -301,10 +334,10 @@ namespace Breezeway
         auto s = settings();
         auto c = client().data();
         const bool maximized = isMaximized();
-        const int width =  maximized ? c->width() : c->width() - 2*s->largeSpacing()*Metrics::TitleBar_SideMargin;
-        const int height = maximized ? borderTop() : borderTop() - s->smallSpacing()*Metrics::TitleBar_TopMargin;
-        const int x = maximized ? 0 : s->largeSpacing()*Metrics::TitleBar_SideMargin;
-        const int y = maximized ? 0 : s->smallSpacing()*Metrics::TitleBar_TopMargin;
+        const int width =  maximized ? c->width() : c->width() - 2*s->largeSpacing()*customButtonMargin();
+        const int height = maximized ? borderTop() : borderTop() - s->smallSpacing()*customTitleBarHeight();
+        const int x = maximized ? 0 : s->largeSpacing()*customButtonMargin();
+        const int y = maximized ? 0 : s->smallSpacing()*customTitleBarHeight();
         setTitleBar(QRect(x, y, width, height));
     }
 
@@ -413,10 +446,10 @@ namespace Breezeway
             // padding below
             // extra pixel is used for the active window outline
             const int baseSize = s->smallSpacing();
-            top += baseSize*Metrics::TitleBar_BottomMargin + 1;
+            top += baseSize*customTitleBarHeight() + 1;
 
             // padding above
-            top += baseSize*TitleBar_TopMargin;
+            top += baseSize*customTitleBarHeight();
 
         }
 
@@ -458,9 +491,9 @@ namespace Breezeway
         const auto s = settings();
 
         // adjust button position
-        const int bHeight = captionHeight() + (isTopEdge() ? s->smallSpacing()*Metrics::TitleBar_TopMargin:0);
+        const int bHeight = captionHeight() + (isTopEdge() ? s->smallSpacing()*customTitleBarHeight():0);
         const int bWidth = buttonHeight();
-        const int verticalOffset = (isTopEdge() ? s->smallSpacing()*Metrics::TitleBar_TopMargin:0) + (captionHeight()-buttonHeight())/2;
+        const int verticalOffset = (isTopEdge() ? s->smallSpacing()*customTitleBarHeight():0) + (captionHeight()-buttonHeight())/2;
         foreach( const QPointer<KDecoration2::DecorationButton>& button, m_leftButtons->buttons() + m_rightButtons->buttons() )
         {
             button.data()->setGeometry( QRectF( QPoint( 0, 0 ), QSizeF( bWidth, bHeight ) ) );
@@ -473,11 +506,11 @@ namespace Breezeway
         {
 
             // spacing
-            m_leftButtons->setSpacing(s->smallSpacing()*Metrics::TitleBar_ButtonSpacing);
+            m_leftButtons->setSpacing(s->smallSpacing()*customButtonSpacing());
 
             // padding
-            const int vPadding = isTopEdge() ? 0 : s->smallSpacing()*Metrics::TitleBar_TopMargin;
-            const int hPadding = s->smallSpacing()*Metrics::TitleBar_SideMargin;
+            const int vPadding = isTopEdge() ? 0 : s->smallSpacing()*customTitleBarHeight();
+            const int hPadding = s->smallSpacing()*customButtonMargin();
             if( isLeftEdge() )
             {
                 // add offsets on the side buttons, to preserve padding, but satisfy Fitts law
@@ -497,11 +530,11 @@ namespace Breezeway
         {
 
             // spacing
-            m_rightButtons->setSpacing(s->smallSpacing()*Metrics::TitleBar_ButtonSpacing);
+            m_rightButtons->setSpacing(s->smallSpacing()*customButtonSpacing());
 
             // padding
-            const int vPadding = isTopEdge() ? 0 : s->smallSpacing()*Metrics::TitleBar_TopMargin;
-            const int hPadding = s->smallSpacing()*Metrics::TitleBar_SideMargin;
+            const int vPadding = isTopEdge() ? 0 : s->smallSpacing()*customTitleBarHeight();
+            const int hPadding = s->smallSpacing()*customButtonMargin();
             if( isRightEdge() )
             {
 
@@ -525,7 +558,7 @@ namespace Breezeway
         // TODO: optimize based on repaintRegion
         auto c = client().data();
         auto s = settings();
-
+        
         // paint background
         if( !c->isShaded() )
         {
@@ -538,9 +571,11 @@ namespace Breezeway
             // clip away the top part
             if( !hideTitleBar() ) painter->setClipRect(0, borderTop(), size().width(), size().height() - borderTop(), Qt::IntersectClip);
 
-            if( s->isAlphaChannelSupported() ) painter->drawRoundedRect(rect(), Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
-            else painter->drawRect( rect() );
-
+            if( s->isAlphaChannelSupported() ){
+                painter->drawRoundedRect(rect(), customRadius(), customRadius());
+            } else {
+                painter->drawRect( rect() );
+            } 
             painter->restore();
         }
 
@@ -559,6 +594,22 @@ namespace Breezeway
             painter->restore();
         }
 
+        // draw highlight box
+        // NOTE: box is drawn correctly along the edges but is
+        // overlayed by the content of a window -> if 'no borders'
+        // setting is used, this will make the line stop after
+        // the titlebar, making it look unfinished
+        if( drawHighlight() ){
+            const QColor titleBarColor = (  this->titleBarColor() );
+            const QRect windowRect( 
+                QPoint(0, 0), 
+                QSize( size().width(), size().height() ) );
+            QColor sharpColor = titleBarColor.lighter(200);
+            sharpColor.setAlpha(102);
+            painter->setBrush( Qt::NoBrush );
+            painter->setPen( sharpColor );
+            painter->drawRoundedRect(windowRect, customRadius(), customRadius());
+        }
     }
 
     //________________________________________________________________
@@ -566,25 +617,34 @@ namespace Breezeway
     {
         const auto c = client().data();
         const QRect titleRect(QPoint(0, 0), QSize(size().width(), borderTop()));
+        const QColor titleBarColor = (  this->titleBarColor() );
 
         if ( !titleRect.intersects(repaintRegion) ) return;
 
         painter->save();
         painter->setPen(Qt::NoPen);
 
-        // render a linear gradient on title area
-        if( m_internalSettings->drawBackgroundGradient() )
+        // render a linear gradient on titlebar including highlight area
+        if( ( m_internalSettings->drawBackgroundGradient() && !invertGradient() ) || ( !m_internalSettings->drawBackgroundGradient() && invertGradient() ) )
         {
-            const int lightfactor = c->isActive()? 103: 102;
-            const QColor titleBarColor( this->titleBarColor() );
+            QColor color = ( this->titleBarColor() );
+            int y = 0.2126*color.red()+0.7152*color.green()+0.0722*color.blue();
+            const int lfv = y > 128? 104: 110;
+            const int gv = y > 128? 95: 90;
+            const int lightfactor = c->isActive()? lfv: 100;
             QLinearGradient gradient( 0, 0, 0, titleRect.height() );
-            gradient.setColorAt(0.0, titleBarColor.lighter( lightfactor ) );
-            gradient.setColorAt(0.8, titleBarColor);
+            gradient.setColorAt(0.0, titleBarColor.lighter(185) );
+            gradient.setColorAt(0.04, titleBarColor.lighter(lightfactor));
+            gradient.setColorAt(0.8, titleBarColor.lighter(gv));
             painter->setBrush(gradient);
 
+        // if user doesn't want a gradient, we only paint highlight line
+        // and titlebar color
         } else {
-
-            painter->setBrush( titleBarColor() );
+            QLinearGradient gradient(0, 0, 0, titleRect.height());
+            gradient.setColorAt(0.0, titleBarColor.lighter(185));
+            gradient.setColorAt(0.04, titleBarColor);
+            painter->setBrush(gradient);
 
         }
 
@@ -596,26 +656,29 @@ namespace Breezeway
 
         } else if( c->isShaded() ) {
 
-            painter->drawRoundedRect(titleRect, Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
+            painter->drawRoundedRect(titleRect, customRadius(), customRadius());
 
         } else {
 
             painter->setClipRect(titleRect, Qt::IntersectClip);
 
             // the rect is made a little bit larger to be able to clip away the rounded corners at the bottom and sides
+            // NOTE: this is possibly the reason for the shadow
+            // not properly attaching to the bottom of a titlebar when
+            // collapsing the window and leaving a blank space below it
             painter->drawRoundedRect(titleRect.adjusted(
-                isLeftEdge() ? -Metrics::Frame_FrameRadius:0,
-                isTopEdge() ? -Metrics::Frame_FrameRadius:0,
-                isRightEdge() ? Metrics::Frame_FrameRadius:0,
-                Metrics::Frame_FrameRadius),
-                Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
+                isLeftEdge() ? -customRadius():0,
+                isTopEdge() ? -customRadius():0,
+                isRightEdge() ? customRadius():0,
+                customRadius()),
+                customRadius(), customRadius());
 
         }
 
         const QColor outlineColor( this->outlineColor() );
         if( !c->isShaded() && outlineColor.isValid() )
         {
-            // outline
+            // titlebar separator line
             painter->setRenderHint( QPainter::Antialiasing, false );
             painter->setBrush( Qt::NoBrush );
             painter->setPen( outlineColor );
@@ -634,18 +697,69 @@ namespace Breezeway
         // draw all buttons
         m_leftButtons->paint(painter, repaintRegion);
         m_rightButtons->paint(painter, repaintRegion);
+
+    }
+
+    //________________________________________________________________
+    int Decoration::customTitleBarHeight() const
+    {
+        switch( m_internalSettings->titleBarHeight() )
+        {
+            case 0: return Metrics::TitleBar_MarginSmall;
+            default:
+            case 1: return Metrics::TitleBar_Margin;
+            case 2: return Metrics::TitleBar_MarginLarge;
+        }
+    }
+
+    //________________________________________________________________
+    int Decoration::customButtonMargin() const
+    {
+        switch( m_internalSettings->buttonMargin() )
+        {
+            case 0: return Metrics::TitleBar_SideMarginSmall;
+            default:
+            case 1: return Metrics::TitleBar_SideMargin;
+            case 2: return Metrics::TitleBar_SideMarginLarge;
+        }
+    }
+
+    //________________________________________________________________
+    int Decoration::customButtonSpacing() const
+    {
+        switch( m_internalSettings->buttonSpacing() )
+        {
+            case 0: return Metrics::TitleBar_ButtonSpacingSmall;
+            default:
+            case 1: return Metrics::TitleBar_ButtonSpacing;
+            case 2: return Metrics::TitleBar_ButtonSpacingLarge;
+        }
+    }
+
+    //________________________________________________________________
+    int Decoration::customRadius() const
+    {
+        switch( m_internalSettings->borderRadius() )
+        {
+            case 0: return Metrics::Frame_FrameRadiusNone;
+            case 1: return Metrics::Frame_FrameRadiusTiny;
+            default:
+            case 2: return Metrics::Frame_FrameRadius;
+            case 3: return Metrics::Frame_FrameRadiusExtended;
+        }
     }
 
     //________________________________________________________________
     int Decoration::buttonHeight() const
     {
         const int baseSize = settings()->gridUnit();
+        // baseSize is roughly 8 pixel
         switch( m_internalSettings->buttonSize() )
         {
             case InternalSettings::ButtonTiny: return baseSize;
             case InternalSettings::ButtonSmall: return baseSize*1.5;
             default:
-            case InternalSettings::ButtonNormal: return baseSize*2;
+            case InternalSettings::ButtonNormal: return baseSize*2-2;
             case InternalSettings::ButtonLarge: return baseSize*2.5;
             case InternalSettings::ButtonVeryLarge: return baseSize*3.5;
         }
@@ -654,7 +768,7 @@ namespace Breezeway
 
     //________________________________________________________________
     int Decoration::captionHeight() const
-    { return hideTitleBar() ? borderTop() : borderTop() - settings()->smallSpacing()*(Metrics::TitleBar_BottomMargin + Metrics::TitleBar_TopMargin ) - 1; }
+    { return hideTitleBar() ? borderTop() : borderTop() - settings()->smallSpacing()*(customTitleBarHeight() + customTitleBarHeight() ) - 1; }
 
     //________________________________________________________________
     QPair<QRect,Qt::Alignment> Decoration::captionRect() const
@@ -664,14 +778,15 @@ namespace Breezeway
 
             auto c = client().data();
             const int leftOffset = m_leftButtons->buttons().isEmpty() ?
-                Metrics::TitleBar_SideMargin*settings()->smallSpacing():
-                m_leftButtons->geometry().x() + m_leftButtons->geometry().width() + Metrics::TitleBar_SideMargin*settings()->smallSpacing();
+                customButtonMargin()*settings()->smallSpacing():
+                m_leftButtons->geometry().x() + m_leftButtons->geometry().width() + customButtonMargin()*settings()->smallSpacing();
 
             const int rightOffset = m_rightButtons->buttons().isEmpty() ?
-                Metrics::TitleBar_SideMargin*settings()->smallSpacing() :
-                size().width() - m_rightButtons->geometry().x() + Metrics::TitleBar_SideMargin*settings()->smallSpacing();
+                customButtonMargin()*settings()->smallSpacing() :
+                size().width() - m_rightButtons->geometry().x() + customButtonMargin()*settings()->smallSpacing();
 
-            const int yOffset = settings()->smallSpacing()*Metrics::TitleBar_TopMargin;
+         
+            const int yOffset = settings()->smallSpacing()*customTitleBarHeight();
             const QRect maxRect( leftOffset, yOffset, size().width() - leftOffset - rightOffset, captionHeight() );
 
             switch( m_internalSettings->titleAlignment() )
@@ -720,6 +835,7 @@ namespace Breezeway
         } else {
             sShadow = g_sInactiveShadow;
         }
+
         if (!sShadow
                 ||g_shadowSizeEnum != m_internalSettings->shadowSize()
                 || g_shadowStrength != m_internalSettings->shadowStrength()
@@ -728,6 +844,7 @@ namespace Breezeway
             g_shadowSizeEnum = m_internalSettings->shadowSize();
             g_shadowStrength = m_internalSettings->shadowStrength();
             g_shadowColor = m_internalSettings->shadowColor();
+
 
             const CompositeShadowParams params = lookupShadowParams(g_shadowSizeEnum);
             if (params.isNone()) {
@@ -745,14 +862,23 @@ namespace Breezeway
             const QSize boxSize = BoxShadowRenderer::calculateMinimumBoxSize(params.shadow1.radius)
                 .expandedTo(BoxShadowRenderer::calculateMinimumBoxSize(params.shadow2.radius));
 
+
             BoxShadowRenderer shadowRenderer;
-            shadowRenderer.setBorderRadius(Metrics::Frame_FrameRadius + 0.5);
+            shadowRenderer.setBorderRadius(customRadius() + 0.5);
             shadowRenderer.setBoxSize(boxSize);
             shadowRenderer.setDevicePixelRatio(1.0); // TODO: Create HiDPI shadows?
 
             qreal strength = static_cast<qreal>(g_shadowStrength) / 255.0;
+
+            // set shadow strength values for inactive windows
             if ( !c->isActive() ) {
-                strength /= 2;
+                if(m_internalSettings->inactiveShadowBehaviour() == 0){
+                    strength /= 2;
+                } else if (m_internalSettings->inactiveShadowBehaviour() == 1){
+                    strength /= 4;
+                } else if (m_internalSettings->inactiveShadowBehaviour() == 2){
+                    strength = 0;
+                }
             }
             shadowRenderer.addShadow(params.shadow1.offset, params.shadow1.radius,
                 withOpacity(g_shadowColor, params.shadow1.opacity * strength));
@@ -769,6 +895,8 @@ namespace Breezeway
             QRect boxRect(QPoint(0, 0), boxSize);
             boxRect.moveCenter(outerRect.center());
 
+            const QRect titleRect(QPoint(0, 0), QSize(size().width(), borderTop()));
+
             // Mask out inner rect.
             const QMargins padding = QMargins(
                 boxRect.left() - outerRect.left() - Metrics::Shadow_Overlap - params.offset.x(),
@@ -782,17 +910,42 @@ namespace Breezeway
             painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
             painter.drawRoundedRect(
                 innerRect,
-                Metrics::Frame_FrameRadius + 0.5,
-                Metrics::Frame_FrameRadius + 0.5);
+                customRadius() + 0.5,
+                customRadius() + 0.5);
+            
+
+            // Dirty hack to draw things inside the frame
+            // NOTE: this is currently rendered underneath
+            // the window as it is part of the shadow construct
+            const QMargins b_padding = QMargins(
+                boxRect.left() - outerRect.left() - Metrics:: Shadow_Overlap - params.offset.x() + 1,
+                boxRect.top() - outerRect.top() - Metrics::Shadow_Overlap - params.offset.y() + 1,
+                outerRect.right() - boxRect.right() - Metrics::Shadow_Overlap + params.offset.x() + 1,
+                outerRect.bottom() - boxRect.bottom() - Metrics::Shadow_Overlap + params.offset.y() + 1);
+            const QRect overRect = outerRect - b_padding; // test and see what this draws
+
+            // this is the basecolor for the highlight
+            static QColor b_highlight = Qt::white;
+            // setting up the stroke color
+            painter.setPen(withOpacity(b_highlight.lighter(120), 0.2));
+            // setting up brush
+            painter.setBrush(Qt::NoBrush);
+            // setting up composition mode
+            painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+            // creating area to draw
+            painter.drawRoundedRect(
+                overRect, // responsible for the size of the rect
+                customRadius() - 0.5,
+                customRadius() - 0.5);
 
             // Draw outline.
-            painter.setPen(withOpacity(g_shadowColor, 0.2 * strength));
+            painter.setPen(withOpacity(g_shadowColor, 0.6 * strength));
             painter.setBrush(Qt::NoBrush);
             painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
             painter.drawRoundedRect(
                 innerRect,
-                Metrics::Frame_FrameRadius - 0.5,
-                Metrics::Frame_FrameRadius - 0.5);
+                customRadius() - 0.5,
+                customRadius() - 0.5);
 
             painter.end();
 

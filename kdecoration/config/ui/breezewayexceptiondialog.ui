@@ -6,15 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>362</width>
-    <height>321</height>
+    <width>450</width>
+    <height>483</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+   <property name="spacing">
+    <number>6</number>
+   </property>
+   <item alignment="Qt::AlignTop">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Window Identification</string>
@@ -46,15 +49,11 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="detectDialogButton">
-        <property name="text">
-         <string>Detect Window Properties</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1" colspan="2">
        <widget class="QLineEdit" name="exceptionEditor">
+        <property name="whatsThis">
+         <string extracomment="Use the name of the application you want to target, or complex regular expressions to target different states of the same window."/>
+        </property>
         <property name="showClearButton" stdset="0">
          <bool>true</bool>
         </property>
@@ -62,6 +61,9 @@
       </item>
       <item row="0" column="1" colspan="2">
        <widget class="QComboBox" name="exceptionType">
+        <property name="whatsThis">
+         <string extracomment="Choose the selection method to target your specific window. In most cases the class name will yield better results."/>
+        </property>
         <item>
          <property name="text">
           <string>Window Class Name</string>
@@ -74,26 +76,55 @@
         </item>
        </widget>
       </item>
+      <item row="2" column="0" colspan="3">
+       <widget class="QPushButton" name="detectDialogButton">
+        <property name="whatsThis">
+         <string extracomment="Click this button to turn your mouse into a cross hair and then click and select the window you want to target, to easily get window identification."/>
+        </property>
+        <property name="text">
+         <string>Detect Window Properties</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
-   <item>
+   <item alignment="Qt::AlignTop">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>Decoration Options</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="borderSizeCheckBox">
-        <property name="text">
-         <string>Border size:</string>
+      <item row="4" column="1">
+       <widget class="KColorButton" name="customColorSelectEx">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="whatsThis">
+         <string extracomment="Use the color picker to select a color you want to use. May also be used to grab pixel colors from your screen."/>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QCheckBox" name="hideTitleBar">
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="forceBrightFonts">
+        <property name="whatsThis">
+         <string extracomment="Override the font matching algorithm by forcing the titlebar to use bright font colors."/>
+        </property>
         <property name="text">
-         <string>Hide window title bar</string>
+         <string>Force bright title bar fonts</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="customColorBoxEx">
+        <property name="whatsThis">
+         <string extracomment="Enable using a custom color for the target window's title bar."/>
+        </property>
+        <property name="locale">
+         <locale language="English" country="Germany"/>
+        </property>
+        <property name="text">
+         <string>Custom title bar color:</string>
         </property>
        </widget>
       </item>
@@ -101,6 +132,9 @@
        <widget class="QComboBox" name="borderSizeComboBox">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="whatsThis">
+         <string extracomment="Select a custom border size for the target window."/>
         </property>
         <item>
          <property name="text">
@@ -149,21 +183,61 @@
         </item>
        </widget>
       </item>
-      <item row="3" column="0" colspan="2">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="borderSizeCheckBox">
+        <property name="whatsThis">
+         <string extracomment="Enable a custom border size override."/>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
+        <property name="text">
+         <string>Border size:</string>
         </property>
-       </spacer>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="hideTitleBar">
+        <property name="whatsThis">
+         <string extracomment="Force to hide the title bar on the target window."/>
+        </property>
+        <property name="text">
+         <string>Hide window title bar</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0" colspan="2">
+       <widget class="QCheckBox" name="invertGradient">
+        <property name="whatsThis">
+         <string extracomment="This inverts the global settings for title bar gradients. If the global setting is turned on, the target window will not use gradients if this is active, and vice versa."/>
+        </property>
+        <property name="text">
+         <string>Invert global gradient settings</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QCheckBox" name="invertSeparator">
+        <property name="whatsThis">
+         <string extracomment="This inverts the global settings for title bar separators. If the global setting is turned on, the target window will not use separators if this is active, and vice versa."/>
+        </property>
+        <property name="text">
+         <string>Invert global separator settings</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -177,6 +251,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KColorButton</class>
+   <extends>QPushButton</extends>
+   <header>kcolorbutton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -224,6 +305,22 @@
     <hint type="destinationlabel">
      <x>316</x>
      <y>163</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>customColorBoxEx</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>customColorSelectEx</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>117</x>
+     <y>306</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>331</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>
