@@ -179,8 +179,10 @@ namespace Breezeway
         if( backgroundColor.isValid() )
         {
             painter->setPen( Qt::NoPen );
-            painter->setBrush( backgroundColor );
+            painter->setBrush( backgroundColor.darker(120) );
             painter->drawEllipse( QRectF( 0, 0, 18, 18 ) );
+            painter->setBrush( backgroundColor );
+            painter->drawEllipse( QRectF( 1, 1, 16, 16 ) );
         }
 
         // render mark
@@ -192,17 +194,17 @@ namespace Breezeway
             QPen pen( foregroundColor );
             pen.setCapStyle( Qt::RoundCap );
             pen.setJoinStyle( Qt::MiterJoin );
-            pen.setWidthF( PenWidth::Symbol*qMax((qreal)1.0, 20/width ) );
+            pen.setWidthF( PenWidth::Symbol*qMax((qreal)1.3, 20/width ) );
 
             painter->setPen( pen );
-            painter->setBrush( Qt::NoBrush );
+            painter->setBrush( foregroundColor );
 
             switch( type() )
             {
 
                 case DecorationButtonType::Close:
                 {
-                    painter->drawLine( QPointF( 5, 5 ), QPointF( 13, 13 ) );
+                    painter->drawLine( 5, 5, 13, 13 );
                     painter->drawLine( 13, 5, 5, 13 );
                     break;
                 }
@@ -211,30 +213,31 @@ namespace Breezeway
                 {
                     if( isChecked() )
                     {
-                        pen.setJoinStyle( Qt::RoundJoin );
-                        painter->setPen( pen );
-
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 4, 9 ),
-                            QPointF( 9, 4 ),
-                            QPointF( 14, 9 ),
-                            QPointF( 9, 14 )} );
+                            QPointF( 11, 4 ),
+                            QPointF( 11, 7 ),
+                            QPointF( 14, 7 )} );
+                        painter->drawPolygon( QVector<QPointF>{
+                            QPointF( 4, 11 ),
+                            QPointF( 7, 11 ),
+                            QPointF( 7, 14 )} );
 
                     } else {
-                        painter->drawPolyline( QVector<QPointF>{
-                            QPointF( 4, 11 ),
-                            QPointF( 9, 6 ),
-                            QPointF( 14, 11 )});
+                        painter->drawPolygon( QVector<QPointF>{
+                            QPointF( 8, 5 ),
+                            QPointF( 13, 5 ),
+                            QPointF( 13, 10 )} );
+                        painter->drawPolygon( QVector<QPointF>{
+                            QPointF( 10, 13 ),
+                            QPointF( 5, 13 ),
+                            QPointF( 5, 8 )} );
                     }
                     break;
                 }
 
                 case DecorationButtonType::Minimize:
                 {
-                    painter->drawPolyline( QVector<QPointF>{
-                        QPointF( 4, 7 ),
-                        QPointF( 9, 12 ),
-                        QPointF( 14, 7 ) });
+                    painter->drawLine( 4, 9, 14, 9 );
                     break;
                 }
 
@@ -370,11 +373,7 @@ namespace Breezeway
 
         } else if( isPressed() ) {
 
-            return d->titleBarColor();
-
-        } else if( type() == DecorationButtonType::Close && d->internalSettings()->outlineCloseButton() ) {
-
-            return d->titleBarColor();
+            return QColor(colorSymbol);
 
         } else if( ( type() == DecorationButtonType::KeepBelow || type() == DecorationButtonType::KeepAbove || type() == DecorationButtonType::Shade ) && isChecked() ) {
 
@@ -382,15 +381,32 @@ namespace Breezeway
 
         } else if( m_animation->state() == QAbstractAnimation::Running ) {
 
-            return KColorUtils::mix( d->fontColor(), d->titleBarColor(), m_opacity );
+            auto c = d->client().toStrongRef();
+            if ( !c->isActive() ) {
+                QColor color(colorSymbol);
+                color.setAlpha(255*m_opacity);
+                return color;
+            }
+
+            QColor color;
+            if( type() == DecorationButtonType::Close ) {
+                color.setRgb(colorClose);
+            } else if( type() == DecorationButtonType::Maximize ) {
+                color.setRgb(colorMaximize);
+            } else if( type() == DecorationButtonType::Minimize ) {
+                color.setRgb(colorMinimize);
+            } else{
+                color.setRgb(colorOther);
+            }
+            return KColorUtils::mix( color, QColor(colorSymbol), m_opacity );
 
         } else if( isHovered() ) {
 
-            return d->titleBarColor();
+            return QColor(colorSymbol);
 
         } else {
 
-            return d->fontColor();
+            return backgroundColor();
 
         }
 
@@ -411,50 +427,41 @@ namespace Breezeway
 
         if( isPressed() ) {
 
-            if( type() == DecorationButtonType::Close ) return redColor.darker();
-            else return KColorUtils::mix( d->titleBarColor(), d->fontColor(), 0.3 );
+            QColor color;
+            if( type() == DecorationButtonType::Close ) {
+                color.setRgb(colorClose);
+            } else if( type() == DecorationButtonType::Maximize ) {
+                color.setRgb(colorMaximize);
+            } else if( type() == DecorationButtonType::Minimize ) {
+                color.setRgb(colorMinimize);
+            } else{
+                color.setRgb(colorOther);
+            }
+            return KColorUtils::mix( color, QColor(colorSymbol), 0.3 );
 
         } else if( ( type() == DecorationButtonType::KeepBelow || type() == DecorationButtonType::KeepAbove || type() == DecorationButtonType::Shade ) && isChecked() ) {
 
             return d->fontColor();
 
-        } else if( m_animation->state() == QAbstractAnimation::Running ) {
+        } else if( !c->isActive() ) {
 
-            if( type() == DecorationButtonType::Close )
-            {
-                if( d->internalSettings()->outlineCloseButton() )
-                {
-
-                    return c->isActive() ? KColorUtils::mix( redColor, redColor.lighter(), m_opacity ) : KColorUtils::mix( redColor.lighter(), redColor, m_opacity );
-
-                } else {
-
-                    QColor color( redColor.lighter() );
-                    color.setAlpha( color.alpha()*m_opacity );
-                    return color;
-
-                }
-
-            } else {
-
-                QColor color( d->fontColor() );
-                color.setAlpha( color.alpha()*m_opacity );
-                return color;
-
-            }
-
-        } else if( isHovered() ) {
-
-            if( type() == DecorationButtonType::Close ) return c->isActive() ? redColor.lighter() : redColor;
-            else return d->fontColor();
-
-        } else if( type() == DecorationButtonType::Close && d->internalSettings()->outlineCloseButton() ) {
-
-            return c->isActive() ? redColor : d->fontColor();
+            QColor color;
+            color.setRgb(colorInactive);
+            return color;
 
         } else {
 
-            return QColor();
+            QColor color;
+            if( type() == DecorationButtonType::Close ) {
+                color.setRgb(colorClose);
+            } else if( type() == DecorationButtonType::Maximize ) {
+                color.setRgb(colorMaximize);
+            } else if( type() == DecorationButtonType::Minimize ) {
+                color.setRgb(colorMinimize);
+            } else{
+                color.setRgb(colorOther);
+            }
+            return color;
 
         }
 

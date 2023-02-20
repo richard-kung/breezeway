@@ -9,7 +9,7 @@
   <group name="Common">
 
     <entry name="ShadowStrength" type = "Int">
-       <default>255</default>
+       <default>220</default>
        <min>25</min>
        <max>255</max>
     </entry>
@@ -75,11 +75,11 @@
       <choices>
           <choice name="ButtonTiny" />
           <choice name="ButtonSmall" />
-          <choice name="ButtonDefault" />
+          <choice name="ButtonMedium" />
           <choice name="ButtonLarge" />
           <choice name="ButtonVeryLarge" />
       </choices>
-      <default>ButtonDefault</default>
+      <default>ButtonSmall</default>
     </entry>
 
     <!-- maximized windows -->
@@ -87,9 +87,9 @@
         <default>false</default>
     </entry>
 
-    <!-- size grip -->
+    <!-- draw background gradient-->
     <entry name="DrawBackgroundGradient" type = "Bool">
-        <default>false</default>
+        <default>true</default>
     </entry>
 
     <!-- size grip -->
