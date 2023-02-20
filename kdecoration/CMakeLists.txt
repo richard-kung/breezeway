@@ -1,13 +1,13 @@
 add_definitions(-DTRANSLATION_DOMAIN="breezeway_kwin_deco")
 
-find_package(KF5 REQUIRED COMPONENTS CoreAddons GuiAddons ConfigWidgets WindowSystem I18n)
-find_package(Qt5 CONFIG REQUIRED COMPONENTS DBus)
+find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS CoreAddons GuiAddons ConfigWidgets WindowSystem I18n IconThemes)
+find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS DBus)
 
 ### XCB
 find_package(XCB COMPONENTS XCB)
 set_package_properties(XCB PROPERTIES
   DESCRIPTION "X protocol C-language Binding"
-  URL "http://xcb.freedesktop.org"
+  URL "https://xcb.freedesktop.org"
   TYPE OPTIONAL
   PURPOSE "Required to pass style properties to native Windows on X11 Platform"
 )
@@ -16,7 +16,7 @@ if(UNIX AND NOT APPLE)
 
   set(BREEZEWAY_HAVE_X11 ${XCB_XCB_FOUND})
   if (XCB_XCB_FOUND)
-    find_package(Qt5 REQUIRED CONFIG COMPONENTS X11Extras)
+    find_package(Qt5 ${QT_MIN_VERSION} REQUIRED CONFIG COMPONENTS X11Extras)
   endif()
 
 else()
@@ -71,9 +71,9 @@ add_library(breezewaydecoration MODULE
 
 target_link_libraries(breezewaydecoration
     PUBLIC
-        Qt5::Core
-        Qt5::Gui
-        Qt5::DBus
+        Qt::Core
+        Qt::Gui
+        Qt::DBus
     PRIVATE
         breezewaycommon5
         KDecoration2::KDecoration
@@ -82,15 +82,16 @@ target_link_libraries(breezewaydecoration
         KF5::ConfigWidgets
         KF5::GuiAddons
         KF5::I18n
+        KF5::IconThemes
         KF5::WindowSystem)
 
 if(BREEZEWAY_HAVE_X11)
   target_link_libraries(breezewaydecoration
     PUBLIC
-      Qt5::X11Extras
+      Qt::X11Extras
       XCB::XCB)
 endif()
 
 
-install(TARGETS breezewaydecoration DESTINATION ${PLUGIN_INSTALL_DIR}/org.kde.kdecoration2)
-install(FILES config/breezewaydecorationconfig.desktop DESTINATION  ${SERVICES_INSTALL_DIR})
+install(TARGETS breezewaydecoration DESTINATION ${KDE_INSTALL_PLUGINDIR}/org.kde.kdecoration2)
+install(FILES config/breezewaydecorationconfig.desktop DESTINATION  ${KDE_INSTALL_KSERVICES5DIR})

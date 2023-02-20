@@ -1,29 +1,14 @@
 /*
-* Copyright 2014  Martin Gräßlin <mgraesslin@kde.org>
-* Copyright 2014  Hugo Pereira Da Costa <hugo.pereira@free.fr>
-* Copyright 2018  Vlad Zagorodniy <vladzzag@gmail.com>
-* Copyright 2019  Richard Kung <ranmak@gmail.com>
+* SPDX-FileCopyrightText: 2014 Martin Gräßlin <mgraesslin@kde.org>
+* SPDX-FileCopyrightText: 2014 Hugo Pereira Da Costa <hugo.pereira@free.fr>
+* SPDX-FileCopyrightText: 2018 Vlad Zahorodnii <vlad.zahorodnii@kde.org>
+* SPDX-FileCopyrightText: 2021 Paul McAuley <kde@paulmcauley.com>
 *
-* This program is free software; you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as
-* published by the Free Software Foundation; either version 2 of
-* the License or (at your option) version 3 or any later version
-* accepted by the membership of KDE e.V. (or its successor approved
-* by the membership of KDE e.V.), which shall act as a proxy
-* defined in Section 14 of version 3 of the license.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
 */
 
 #include "breezewaydecoration.h"
 
-#include "breezeway.h"
 #include "breezewaysettingsprovider.h"
 #include "config-breezeway.h"
 #include "config/breezewayconfigwidget.h"
@@ -33,9 +18,7 @@
 
 #include "breezewayboxshadowrenderer.h"
 
-#include <KDecoration2/DecoratedClient>
 #include <KDecoration2/DecorationButtonGroup>
-#include <KDecoration2/DecorationSettings>
 #include <KDecoration2/DecorationShadow>
 
 #include <KConfigGroup>
@@ -46,6 +29,7 @@
 #include <QPainter>
 #include <QTextStream>
 #include <QTimer>
+#include <QDBusConnection>
 
 #if BREEZEWAY_HAVE_X11
 #include <QX11Info>
@@ -57,8 +41,8 @@ K_PLUGIN_FACTORY_WITH_JSON(
     BreezewayDecoFactory,
     "breezeway.json",
     registerPlugin<Breezeway::Decoration>();
-    registerPlugin<Breezeway::Button>(QStringLiteral("button"));
-    registerPlugin<Breezeway::ConfigWidget>(QStringLiteral("kcmodule"));
+    registerPlugin<Breezeway::Button>();
+    registerPlugin<Breezeway::ConfigWidget>();
 )
 
 namespace
@@ -104,24 +88,24 @@ namespace
         CompositeShadowParams(),
         // Small
         CompositeShadowParams(
-            QPoint(0, 12),
+            QPoint(0, 4),
             ShadowParams(QPoint(0, 0), 16, 1),
-            ShadowParams(QPoint(0, -6), 8, 0.4)),
+            ShadowParams(QPoint(0, -2), 8, 0.4)),
         // Medium
         CompositeShadowParams(
-            QPoint(0, 16),
+            QPoint(0, 8),
             ShadowParams(QPoint(0, 0), 32, 0.9),
-            ShadowParams(QPoint(0, -8), 16, 0.3)),
+            ShadowParams(QPoint(0, -4), 16, 0.3)),
         // Large
         CompositeShadowParams(
-            QPoint(0, 24),
+            QPoint(0, 12),
             ShadowParams(QPoint(0, 0), 48, 0.8),
-            ShadowParams(QPoint(0, -12), 24, 0.2)),
+            ShadowParams(QPoint(0, -6), 24, 0.2)),
         // Very large
         CompositeShadowParams(
-            QPoint(0, 48),
+            QPoint(0, 16),
             ShadowParams(QPoint(0, 0), 64, 0.7),
-            ShadowParams(QPoint(0, -24), 32, 0.1)),
+            ShadowParams(QPoint(0, -8), 32, 0.1)),
     };
 
     inline CompositeShadowParams lookupShadowParams(int size)
@@ -155,13 +139,14 @@ namespace Breezeway
     static int g_shadowSizeEnum = InternalSettings::ShadowLarge;
     static int g_shadowStrength = 255;
     static QColor g_shadowColor = Qt::black;
-    static QSharedPointer<KDecoration2::DecorationShadow> g_sActiveShadow;
-    static QSharedPointer<KDecoration2::DecorationShadow> g_sInactiveShadow;
+    static QSharedPointer<KDecoration2::DecorationShadow> g_sShadow;
+    static QSharedPointer<KDecoration2::DecorationShadow> g_sShadowInactive;
 
     //________________________________________________________________
     Decoration::Decoration(QObject *parent, const QVariantList &args)
         : KDecoration2::Decoration(parent, args)
-        , m_animation( new QPropertyAnimation( this ) )
+        , m_animation( new QVariantAnimation( this ) )
+        , m_shadowAnimation( new QVariantAnimation( this ) )
     {
         g_sDecoCount++;
     }
@@ -172,8 +157,7 @@ namespace Breezeway
         g_sDecoCount--;
         if (g_sDecoCount == 0) {
             // last deco destroyed, clean up shadow
-            g_sActiveShadow.clear();
-            g_sInactiveShadow.clear();
+            g_sShadow.clear();
         }
 
         deleteSizeGrip();
@@ -194,9 +178,9 @@ namespace Breezeway
     QColor Decoration::titleBarColor() const
     {
 
-        auto c = client().data();
+        const auto c = client().toStrongRef();
         if( hideTitleBar() ) return c->color( ColorGroup::Inactive, ColorRole::TitleBar );
-        else if( m_animation->state() == QPropertyAnimation::Running )
+        else if( m_animation->state() == QAbstractAnimation::Running )
         {
             return KColorUtils::mix(
                 c->color( ColorGroup::Inactive, ColorRole::TitleBar ),
@@ -207,26 +191,11 @@ namespace Breezeway
     }
 
     //________________________________________________________________
-    QColor Decoration::outlineColor() const
-    {
-
-        auto c( client().data() );
-        if( !m_internalSettings->drawTitleBarSeparator() ) return QColor();
-        if( m_animation->state() == QPropertyAnimation::Running )
-        {
-            QColor color( c->palette().color( QPalette::Highlight ) );
-            color.setAlpha( color.alpha()*m_opacity );
-            return color;
-        } else if( c->isActive() ) return c->palette().color( QPalette::Highlight );
-        else return QColor();
-    }
-
-    //________________________________________________________________
     QColor Decoration::fontColor() const
     {
 
-        auto c = client().data();
-        if( m_animation->state() == QPropertyAnimation::Running )
+        const auto c = client().toStrongRef();
+        if( m_animation->state() == QAbstractAnimation::Running )
         {
             return KColorUtils::mix(
                 c->color( ColorGroup::Inactive, ColorRole::Foreground ),
@@ -239,14 +208,32 @@ namespace Breezeway
     //________________________________________________________________
     void Decoration::init()
     {
-        auto c = client().data();
-
+        const auto c = client().toStrongRef();
+        
         // active state change animation
-        m_animation->setStartValue( 0 );
+        // It is important start and end value are of the same type, hence 0.0 and not just 0
+        m_animation->setStartValue( 0.0 );
         m_animation->setEndValue( 1.0 );
-        m_animation->setTargetObject( this );
-        m_animation->setPropertyName( "opacity" );
-        m_animation->setEasingCurve( QEasingCurve::InOutQuad );
+        // Linear to have the same easing as Breezeway animations
+        m_animation->setEasingCurve( QEasingCurve::Linear );
+        connect(m_animation, &QVariantAnimation::valueChanged, this, [this](const QVariant &value) {
+            setOpacity(value.toReal());
+        });
+
+        m_shadowAnimation->setStartValue( 0.0 );
+        m_shadowAnimation->setEndValue( 1.0 );
+        m_shadowAnimation->setEasingCurve( QEasingCurve::OutCubic );
+        connect(m_shadowAnimation, &QVariantAnimation::valueChanged, this, [this](const QVariant& value) {
+            m_shadowOpacity = value.toReal();
+            updateShadow();
+        });
+
+        // use DBus connection to update on breezeway configuration change
+        auto dbus = QDBusConnection::sessionBus();
+        dbus.connect( QString(),
+            QStringLiteral( "/KGlobalSettings" ),
+            QStringLiteral( "org.kde.KGlobalSettings" ),
+            QStringLiteral( "notifyChange" ), this, SLOT(reconfigure()) );
 
         reconfigure();
         updateTitleBar();
@@ -267,11 +254,11 @@ namespace Breezeway
         connect(s.data(), &KDecoration2::DecorationSettings::reconfigured, SettingsProvider::self(), &SettingsProvider::reconfigure, Qt::UniqueConnection );
         connect(s.data(), &KDecoration2::DecorationSettings::reconfigured, this, &Decoration::updateButtonsGeometryDelayed);
 
-        connect(c, &KDecoration2::DecoratedClient::adjacentScreenEdgesChanged, this, &Decoration::recalculateBorders);
-        connect(c, &KDecoration2::DecoratedClient::maximizedHorizontallyChanged, this, &Decoration::recalculateBorders);
-        connect(c, &KDecoration2::DecoratedClient::maximizedVerticallyChanged, this, &Decoration::recalculateBorders);
-        connect(c, &KDecoration2::DecoratedClient::shadedChanged, this, &Decoration::recalculateBorders);
-        connect(c, &KDecoration2::DecoratedClient::captionChanged, this,
+        connect(c.data(), &KDecoration2::DecoratedClient::adjacentScreenEdgesChanged, this, &Decoration::recalculateBorders);
+        connect(c.data(), &KDecoration2::DecoratedClient::maximizedHorizontallyChanged, this, &Decoration::recalculateBorders);
+        connect(c.data(), &KDecoration2::DecoratedClient::maximizedVerticallyChanged, this, &Decoration::recalculateBorders);
+        connect(c.data(), &KDecoration2::DecoratedClient::shadedChanged, this, &Decoration::recalculateBorders);
+        connect(c.data(), &KDecoration2::DecoratedClient::captionChanged, this,
             [this]()
             {
                 // update the caption area
@@ -279,27 +266,25 @@ namespace Breezeway
             }
         );
 
-        connect(c, &KDecoration2::DecoratedClient::activeChanged, this, &Decoration::updateAnimationState);
-        connect(c, &KDecoration2::DecoratedClient::widthChanged, this, &Decoration::updateTitleBar);
-        connect(c, &KDecoration2::DecoratedClient::maximizedChanged, this, &Decoration::updateTitleBar);
-        connect(c, &KDecoration2::DecoratedClient::maximizedChanged, this, &Decoration::setOpaque);
+        connect(c.data(), &KDecoration2::DecoratedClient::activeChanged, this, &Decoration::updateAnimationState);
+        connect(c.data(), &KDecoration2::DecoratedClient::widthChanged, this, &Decoration::updateTitleBar);
+        connect(c.data(), &KDecoration2::DecoratedClient::maximizedChanged, this, &Decoration::updateTitleBar);
+        connect(c.data(), &KDecoration2::DecoratedClient::maximizedChanged, this, &Decoration::setOpaque);
 
-        connect(c, &KDecoration2::DecoratedClient::widthChanged, this, &Decoration::updateButtonsGeometry);
-        connect(c, &KDecoration2::DecoratedClient::maximizedChanged, this, &Decoration::updateButtonsGeometry);
-        connect(c, &KDecoration2::DecoratedClient::adjacentScreenEdgesChanged, this, &Decoration::updateButtonsGeometry);
-        connect(c, &KDecoration2::DecoratedClient::shadedChanged, this, &Decoration::updateButtonsGeometry);
- 
-        connect(c, &KDecoration2::DecoratedClient::activeChanged, this, &Decoration::createShadow);
+        connect(c.data(), &KDecoration2::DecoratedClient::widthChanged, this, &Decoration::updateButtonsGeometry);
+        connect(c.data(), &KDecoration2::DecoratedClient::maximizedChanged, this, &Decoration::updateButtonsGeometry);
+        connect(c.data(), &KDecoration2::DecoratedClient::adjacentScreenEdgesChanged, this, &Decoration::updateButtonsGeometry);
+        connect(c.data(), &KDecoration2::DecoratedClient::shadedChanged, this, &Decoration::updateButtonsGeometry);
 
         createButtons();
-        createShadow();
+        updateShadow();
     }
 
     //________________________________________________________________
     void Decoration::updateTitleBar()
     {
         auto s = settings();
-        auto c = client().data();
+        const auto c = client().toStrongRef();
         const bool maximized = isMaximized();
         const int width =  maximized ? c->width() : c->width() - 2*s->largeSpacing()*Metrics::TitleBar_SideMargin;
         const int height = maximized ? borderTop() : borderTop() - s->smallSpacing()*Metrics::TitleBar_TopMargin;
@@ -311,12 +296,26 @@ namespace Breezeway
     //________________________________________________________________
     void Decoration::updateAnimationState()
     {
-        if( m_internalSettings->animationsEnabled() )
+        if( m_shadowAnimation->duration() > 0 )
         {
 
-            auto c = client().data();
-            m_animation->setDirection( c->isActive() ? QPropertyAnimation::Forward : QPropertyAnimation::Backward );
-            if( m_animation->state() != QPropertyAnimation::Running ) m_animation->start();
+            const auto c = client().toStrongRef();
+            m_shadowAnimation->setDirection( c->isActive() ? QAbstractAnimation::Forward : QAbstractAnimation::Backward );
+            m_shadowAnimation->setEasingCurve( c->isActive() ? QEasingCurve::OutCubic : QEasingCurve::InCubic );
+            if( m_shadowAnimation->state() != QAbstractAnimation::Running ) m_shadowAnimation->start();
+
+        } else {
+
+            updateShadow();
+
+        }
+
+        if( m_animation->duration() > 0 )
+        {
+
+            const auto c = client().toStrongRef();
+            m_animation->setDirection( c->isActive() ? QAbstractAnimation::Forward : QAbstractAnimation::Backward );
+            if( m_animation->state() != QAbstractAnimation::Running ) m_animation->start();
 
         } else {
 
@@ -328,7 +327,7 @@ namespace Breezeway
     //________________________________________________________________
     void Decoration::updateSizeGripVisibility()
     {
-        auto c = client().data();
+        const auto c = client().toStrongRef();
         if( m_sizeGrip )
         { m_sizeGrip->setVisible( c->isResizeable() && !isMaximized() && !c->isShaded() ); }
     }
@@ -376,15 +375,27 @@ namespace Breezeway
     {
 
         m_internalSettings = SettingsProvider::self()->internalSettings( this );
+        
+        setScaledCornerRadius();
 
         // animation
-        m_animation->setDuration( m_internalSettings->animationsDuration() );
+
+        KSharedConfig::Ptr config = KSharedConfig::openConfig();
+        const KConfigGroup cg(config, QStringLiteral("KDE"));
+
+        m_animation->setDuration(0);
+        // Syncing anis between client and decoration is troublesome, so we're not using
+        // any animations right now.
+        // m_animation->setDuration( cg.readEntry("AnimationDurationFactor", 1.0f) * 100.0f );
+
+        // But the shadow is fine to animate like this!
+        m_shadowAnimation->setDuration( cg.readEntry("AnimationDurationFactor", 1.0f) * 100.0f );
 
         // borders
         recalculateBorders();
 
         // shadow
-        createShadow();
+        updateShadow();
 
         // size grip
         if( hasNoBorders() && m_internalSettings->drawSizeGrip() ) createSizeGrip();
@@ -395,7 +406,7 @@ namespace Breezeway
     //________________________________________________________________
     void Decoration::recalculateBorders()
     {
-        auto c = client().data();
+        const auto c = client().toStrongRef();
         auto s = settings();
 
         // left, right and bottom borders
@@ -416,7 +427,7 @@ namespace Breezeway
             top += baseSize*Metrics::TitleBar_BottomMargin + 1;
 
             // padding above
-            top += baseSize*TitleBar_TopMargin;
+            top += baseSize*Metrics::TitleBar_TopMargin;
 
         }
 
@@ -428,10 +439,10 @@ namespace Breezeway
         int extBottom = 0;
         if( hasNoBorders() )
         {
-            extSides = extSize;
-            extBottom = extSize;
+            if( !isMaximizedHorizontally() ) extSides = extSize;
+            if( !isMaximizedVertically() ) extBottom = extSize;
 
-        } else if( hasNoSideBorders() ) {
+        } else if( hasNoSideBorders() && !isMaximizedHorizontally() ) {
 
             extSides = extSize;
 
@@ -523,7 +534,7 @@ namespace Breezeway
     void Decoration::paint(QPainter *painter, const QRect &repaintRegion)
     {
         // TODO: optimize based on repaintRegion
-        auto c = client().data();
+        auto c = client().toStrongRef();
         auto s = settings();
 
         // paint background
@@ -538,7 +549,7 @@ namespace Breezeway
             // clip away the top part
             if( !hideTitleBar() ) painter->setClipRect(0, borderTop(), size().width(), size().height() - borderTop(), Qt::IntersectClip);
 
-            if( s->isAlphaChannelSupported() ) painter->drawRoundedRect(rect(), Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
+            if( s->isAlphaChannelSupported() ) painter->drawRoundedRect(rect(), m_scaledCornerRadius, m_scaledCornerRadius);
             else painter->drawRect( rect() );
 
             painter->restore();
@@ -564,25 +575,31 @@ namespace Breezeway
     //________________________________________________________________
     void Decoration::paintTitleBar(QPainter *painter, const QRect &repaintRegion)
     {
-        const auto c = client().data();
-        const QRect titleRect(QPoint(0, 0), QSize(size().width(), borderTop()));
+        const auto c = client().toStrongRef();
+        const QRect frontRect(QPoint(0, 1), QSize(size().width(), borderTop()+1));
+        const QRect backRect(QPoint(0, 0), QSize(size().width(), borderTop()));
 
-        if ( !titleRect.intersects(repaintRegion) ) return;
+        QBrush frontBrush;
+        QBrush backBrush( this->titleBarColor().lighter( 130 ) );
+
+        if ( !backRect.intersects(repaintRegion) ) return;
 
         painter->save();
         painter->setPen(Qt::NoPen);
 
         // render a linear gradient on title area
-        if( m_internalSettings->drawBackgroundGradient() )
+        if( c->isActive() && m_internalSettings->drawBackgroundGradient() )
         {
-            const int lightfactor = c->isActive()? 103: 102;
-            const QColor titleBarColor( this->titleBarColor() );
-            QLinearGradient gradient( 0, 0, 0, titleRect.height() );
-            gradient.setColorAt(0.0, titleBarColor.lighter( lightfactor ) );
-            gradient.setColorAt(0.8, titleBarColor);
-            painter->setBrush(gradient);
+
+            QLinearGradient gradient( 0, 0, 0, frontRect.height() );
+            gradient.setColorAt(0.0, titleBarColor().lighter( 120 ) );
+            gradient.setColorAt(0.8, titleBarColor());
+
+            frontBrush = gradient;
 
         } else {
+
+            frontBrush = titleBarColor();
 
             painter->setBrush( titleBarColor() );
 
@@ -592,34 +609,40 @@ namespace Breezeway
         if( isMaximized() || !s->isAlphaChannelSupported() )
         {
 
-            painter->drawRect(titleRect);
+            painter->setBrush(backBrush);
+            painter->drawRect(backRect);
+
+            painter->setBrush(frontBrush);
+            painter->drawRect(frontRect);
 
         } else if( c->isShaded() ) {
 
-            painter->drawRoundedRect(titleRect, Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
+            painter->setBrush(backBrush);
+            painter->drawRoundedRect(backRect, m_scaledCornerRadius, m_scaledCornerRadius);
+
+            painter->setBrush(frontBrush);
+            painter->drawRoundedRect(frontRect, m_scaledCornerRadius, m_scaledCornerRadius);
 
         } else {
 
-            painter->setClipRect(titleRect, Qt::IntersectClip);
+            painter->setClipRect(backRect, Qt::IntersectClip);
 
-            // the rect is made a little bit larger to be able to clip away the rounded corners at the bottom and sides
-            painter->drawRoundedRect(titleRect.adjusted(
-                isLeftEdge() ? -Metrics::Frame_FrameRadius:0,
-                isTopEdge() ? -Metrics::Frame_FrameRadius:0,
-                isRightEdge() ? Metrics::Frame_FrameRadius:0,
-                Metrics::Frame_FrameRadius),
-                Metrics::Frame_FrameRadius, Metrics::Frame_FrameRadius);
+            auto drawThe = [=](const QRect& r) {
+                // the rect is made a little bit larger to be able to clip away the rounded corners at the bottom and sides
+                painter->drawRoundedRect(r.adjusted(
+                    isLeftEdge() ? -m_scaledCornerRadius:0,
+                    isTopEdge() ? -m_scaledCornerRadius:0,
+                    isRightEdge() ? m_scaledCornerRadius:0,
+                    m_scaledCornerRadius),
+                    m_scaledCornerRadius, m_scaledCornerRadius);
+            };
 
-        }
+            painter->setBrush(backBrush);
+            drawThe(backRect);
 
-        const QColor outlineColor( this->outlineColor() );
-        if( !c->isShaded() && outlineColor.isValid() )
-        {
-            // outline
-            painter->setRenderHint( QPainter::Antialiasing, false );
-            painter->setBrush( Qt::NoBrush );
-            painter->setPen( outlineColor );
-            painter->drawLine( titleRect.bottomLeft(), titleRect.bottomRight() );
+            painter->setBrush(frontBrush);
+            drawThe(frontRect);
+
         }
 
         painter->restore();
@@ -645,7 +668,7 @@ namespace Breezeway
             case InternalSettings::ButtonTiny: return baseSize;
             case InternalSettings::ButtonSmall: return baseSize*1.5;
             default:
-            case InternalSettings::ButtonNormal: return baseSize*2;
+            case InternalSettings::ButtonDefault: return baseSize*2;
             case InternalSettings::ButtonLarge: return baseSize*2.5;
             case InternalSettings::ButtonVeryLarge: return baseSize*3.5;
         }
@@ -662,7 +685,7 @@ namespace Breezeway
         if( hideTitleBar() ) return qMakePair( QRect(), Qt::AlignCenter );
         else {
 
-            auto c = client().data();
+            auto c = client().toStrongRef();
             const int leftOffset = m_leftButtons->buttons().isEmpty() ?
                 Metrics::TitleBar_SideMargin*settings()->smallSpacing():
                 m_leftButtons->geometry().x() + m_leftButtons->geometry().width() + Metrics::TitleBar_SideMargin*settings()->smallSpacing();
@@ -711,98 +734,107 @@ namespace Breezeway
     }
 
     //________________________________________________________________
-    void Decoration::createShadow()
+    void Decoration::updateShadow()
     {
-        QSharedPointer<KDecoration2::DecorationShadow> sShadow;
-        auto c = client().data();
-        if ( c->isActive() ) {
-            sShadow = g_sActiveShadow;
-        } else {
-            sShadow = g_sInactiveShadow;
+        auto s = settings();
+        // Animated case, no cached shadow object
+        if ( (m_shadowAnimation->state() == QAbstractAnimation::Running) && (m_shadowOpacity != 0.0) && (m_shadowOpacity != 1.0) )
+        {
+            setShadow(createShadowObject(0.5 + m_shadowOpacity * 0.5));
+            return;
         }
-        if (!sShadow
-                ||g_shadowSizeEnum != m_internalSettings->shadowSize()
+
+        if (g_shadowSizeEnum != m_internalSettings->shadowSize()
                 || g_shadowStrength != m_internalSettings->shadowStrength()
                 || g_shadowColor != m_internalSettings->shadowColor())
         {
+            g_sShadow.clear();
+            g_sShadowInactive.clear();
             g_shadowSizeEnum = m_internalSettings->shadowSize();
             g_shadowStrength = m_internalSettings->shadowStrength();
             g_shadowColor = m_internalSettings->shadowColor();
-
-            const CompositeShadowParams params = lookupShadowParams(g_shadowSizeEnum);
-            if (params.isNone()) {
-                sShadow.clear();
-                setShadow(sShadow);
-                return;
-            }
-
-            auto withOpacity = [](const QColor &color, qreal opacity) -> QColor {
-                QColor c(color);
-                c.setAlphaF(opacity);
-                return c;
-            };
-
-            const QSize boxSize = BoxShadowRenderer::calculateMinimumBoxSize(params.shadow1.radius)
-                .expandedTo(BoxShadowRenderer::calculateMinimumBoxSize(params.shadow2.radius));
-
-            BoxShadowRenderer shadowRenderer;
-            shadowRenderer.setBorderRadius(Metrics::Frame_FrameRadius + 0.5);
-            shadowRenderer.setBoxSize(boxSize);
-            shadowRenderer.setDevicePixelRatio(1.0); // TODO: Create HiDPI shadows?
-
-            qreal strength = static_cast<qreal>(g_shadowStrength) / 255.0;
-            if ( !c->isActive() ) {
-                strength /= 2;
-            }
-            shadowRenderer.addShadow(params.shadow1.offset, params.shadow1.radius,
-                withOpacity(g_shadowColor, params.shadow1.opacity * strength));
-            shadowRenderer.addShadow(params.shadow2.offset, params.shadow2.radius,
-                withOpacity(g_shadowColor, params.shadow2.opacity * strength));
-
-            QImage shadowTexture = shadowRenderer.render();
-
-            QPainter painter(&shadowTexture);
-            painter.setRenderHint(QPainter::Antialiasing);
-
-            const QRect outerRect = shadowTexture.rect();
-
-            QRect boxRect(QPoint(0, 0), boxSize);
-            boxRect.moveCenter(outerRect.center());
-
-            // Mask out inner rect.
-            const QMargins padding = QMargins(
-                boxRect.left() - outerRect.left() - Metrics::Shadow_Overlap - params.offset.x(),
-                boxRect.top() - outerRect.top() - Metrics::Shadow_Overlap - params.offset.y(),
-                outerRect.right() - boxRect.right() - Metrics::Shadow_Overlap + params.offset.x(),
-                outerRect.bottom() - boxRect.bottom() - Metrics::Shadow_Overlap + params.offset.y());
-            const QRect innerRect = outerRect - padding;
-
-            painter.setPen(Qt::NoPen);
-            painter.setBrush(Qt::black);
-            painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
-            painter.drawRoundedRect(
-                innerRect,
-                Metrics::Frame_FrameRadius + 0.5,
-                Metrics::Frame_FrameRadius + 0.5);
-
-            // Draw outline.
-            painter.setPen(withOpacity(g_shadowColor, 0.2 * strength));
-            painter.setBrush(Qt::NoBrush);
-            painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-            painter.drawRoundedRect(
-                innerRect,
-                Metrics::Frame_FrameRadius - 0.5,
-                Metrics::Frame_FrameRadius - 0.5);
-
-            painter.end();
-
-            sShadow = QSharedPointer<KDecoration2::DecorationShadow>::create();
-            sShadow->setPadding(padding);
-            sShadow->setInnerShadowRect(QRect(outerRect.center(), QSize(1, 1)));
-            sShadow->setShadow(shadowTexture);
         }
 
-        setShadow(sShadow);
+        auto c = client().toStrongRef();
+        auto& shadow = (c->isActive()) ? g_sShadow : g_sShadowInactive;
+        if ( !shadow )
+        {
+            shadow = createShadowObject(c->isActive() ? 1.0 : 0.5);
+        }
+        setShadow(shadow);
+    }
+
+    //________________________________________________________________
+    QSharedPointer<KDecoration2::DecorationShadow> Decoration::createShadowObject( const float strengthScale )
+    {
+          const CompositeShadowParams params = lookupShadowParams(m_internalSettings->shadowSize());
+          if (params.isNone())
+          {
+              return nullptr;
+          }
+
+          auto withOpacity = [](const QColor& color, qreal opacity) -> QColor {
+              QColor c(color);
+              c.setAlphaF(opacity);
+              return c;
+          };
+
+
+          const QSize boxSize = BoxShadowRenderer::calculateMinimumBoxSize(params.shadow1.radius)
+              .expandedTo(BoxShadowRenderer::calculateMinimumBoxSize(params.shadow2.radius));
+
+          BoxShadowRenderer shadowRenderer;
+          shadowRenderer.setBorderRadius(m_scaledCornerRadius + 0.5);
+          shadowRenderer.setBoxSize(boxSize);
+
+          const qreal strength = m_internalSettings->shadowStrength() / 255.0 * strengthScale;
+          shadowRenderer.addShadow(params.shadow1.offset, params.shadow1.radius,
+              withOpacity(m_internalSettings->shadowColor(), params.shadow1.opacity * strength));
+          shadowRenderer.addShadow(params.shadow2.offset, params.shadow2.radius,
+              withOpacity(m_internalSettings->shadowColor(), params.shadow2.opacity * strength));
+
+          QImage shadowTexture = shadowRenderer.render();
+
+          QPainter painter(&shadowTexture);
+          painter.setRenderHint(QPainter::Antialiasing);
+
+          const QRect outerRect = shadowTexture.rect();
+
+          QRect boxRect(QPoint(0, 0), boxSize);
+          boxRect.moveCenter(outerRect.center());
+
+          // Mask out inner rect.
+          const QMargins padding = QMargins(
+              boxRect.left() - outerRect.left() - Metrics::Shadow_Overlap - params.offset.x(),
+              boxRect.top() - outerRect.top() - Metrics::Shadow_Overlap - params.offset.y(),
+              outerRect.right() - boxRect.right() - Metrics::Shadow_Overlap + params.offset.x(),
+              outerRect.bottom() - boxRect.bottom() - Metrics::Shadow_Overlap + params.offset.y());
+          const QRect innerRect = outerRect - padding;
+
+          painter.setPen(Qt::NoPen);
+          painter.setBrush(Qt::black);
+          painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+          painter.drawRoundedRect(
+              innerRect,
+              m_scaledCornerRadius + 0.5,
+              m_scaledCornerRadius + 0.5);
+
+          // Draw outline.
+          painter.setPen(withOpacity(Qt::black, 0.1));
+          painter.setBrush(Qt::NoBrush);
+          painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+          painter.drawRoundedRect(
+              innerRect,
+              m_scaledCornerRadius - 0.5,
+              m_scaledCornerRadius - 0.5);
+
+          painter.end();
+
+          auto ret = QSharedPointer<KDecoration2::DecorationShadow>::create();
+          ret->setPadding(padding);
+          ret->setInnerShadowRect(QRect(outerRect.center(), QSize(1, 1)));
+          ret->setShadow(shadowTexture);
+          return ret;
     }
 
     //_________________________________________________________________
@@ -816,15 +848,15 @@ namespace Breezeway
         if( !QX11Info::isPlatformX11() ) return;
 
         // access client
-        auto c = client().data();
+        auto c = client().toStrongRef();
         if( !c ) return;
 
         if( c->windowId() != 0 )
         {
             m_sizeGrip = new SizeGrip( this );
-            connect( c, &KDecoration2::DecoratedClient::maximizedChanged, this, &Decoration::updateSizeGripVisibility );
-            connect( c, &KDecoration2::DecoratedClient::shadedChanged, this, &Decoration::updateSizeGripVisibility );
-            connect( c, &KDecoration2::DecoratedClient::resizeableChanged, this, &Decoration::updateSizeGripVisibility );
+            connect( c.data(), &KDecoration2::DecoratedClient::maximizedChanged, this, &Decoration::updateSizeGripVisibility );
+            connect( c.data(), &KDecoration2::DecoratedClient::shadedChanged, this, &Decoration::updateSizeGripVisibility );
+            connect( c.data(), &KDecoration2::DecoratedClient::resizeableChanged, this, &Decoration::updateSizeGripVisibility );
         }
         #endif
 
@@ -839,7 +871,12 @@ namespace Breezeway
             m_sizeGrip = nullptr;
         }
     }
-
+    
+    void Decoration::setScaledCornerRadius()
+    {
+        m_scaledCornerRadius = Metrics::Frame_FrameRadius*settings()->smallSpacing();
+        
+    }
 } // namespace
 
 

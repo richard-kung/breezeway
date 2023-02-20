@@ -2,25 +2,9 @@
 // breezewayexceptionlistwidget.cpp
 // -------------------
 //
-// Copyright (c) 2009 Hugo Pereira Da Costa <hugo.pereira@free.fr>
+// SPDX-FileCopyrightText: 2009 Hugo Pereira Da Costa <hugo.pereira@free.fr>
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-// IN THE SOFTWARE.
+// SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
 #include "breezewayexceptionlistwidget.h"
@@ -31,6 +15,7 @@
 #include <QMessageBox>
 #include <QPointer>
 #include <QIcon>
+#include <QRegularExpression>
 
 //__________________________________________________________
 namespace Breezeway
@@ -49,7 +34,7 @@ namespace Breezeway
         m_ui.exceptionListView->setRootIsDecorated( false );
         m_ui.exceptionListView->setSortingEnabled( false );
         m_ui.exceptionListView->setModel( &model() );
-        m_ui.exceptionListView->sortByColumn( ExceptionModel::ColumnType );
+        m_ui.exceptionListView->sortByColumn( ExceptionModel::ColumnType, Qt::AscendingOrder );
         m_ui.exceptionListView->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Ignored ) );
 
         m_ui.moveUpButton->setIcon( QIcon::fromTheme( QStringLiteral( "arrow-up" ) ) );
@@ -58,15 +43,15 @@ namespace Breezeway
         m_ui.removeButton->setIcon( QIcon::fromTheme( QStringLiteral( "list-remove" ) ) );
         m_ui.editButton->setIcon( QIcon::fromTheme( QStringLiteral( "edit-rename" ) ) );
 
-        connect( m_ui.addButton, SIGNAL(clicked()), SLOT(add()) );
-        connect( m_ui.editButton, SIGNAL(clicked()), SLOT(edit()) );
-        connect( m_ui.removeButton, SIGNAL(clicked()), SLOT(remove()) );
-        connect( m_ui.moveUpButton, SIGNAL(clicked()), SLOT(up()) );
-        connect( m_ui.moveDownButton, SIGNAL(clicked()), SLOT(down()) );
+        connect( m_ui.addButton, &QAbstractButton::clicked, this, &ExceptionListWidget::add );
+        connect( m_ui.editButton, &QAbstractButton::clicked, this, &ExceptionListWidget::edit );
+        connect( m_ui.removeButton, &QAbstractButton::clicked, this, &ExceptionListWidget::remove );
+        connect( m_ui.moveUpButton, &QAbstractButton::clicked, this, &ExceptionListWidget::up );
+        connect( m_ui.moveDownButton, &QAbstractButton::clicked, this, &ExceptionListWidget::down );
 
-        connect( m_ui.exceptionListView, SIGNAL(activated(QModelIndex)), SLOT(edit()) );
-        connect( m_ui.exceptionListView, SIGNAL(clicked(QModelIndex)), SLOT(toggle(QModelIndex)) );
-        connect( m_ui.exceptionListView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(updateButtons()) );
+        connect( m_ui.exceptionListView, &QAbstractItemView::activated, this, &ExceptionListWidget::edit );
+        connect( m_ui.exceptionListView, &QAbstractItemView::clicked, this, &ExceptionListWidget::toggle );
+        connect( m_ui.exceptionListView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ExceptionListWidget::updateButtons );
 
         updateButtons();
         resizeColumns();
@@ -323,7 +308,7 @@ namespace Breezeway
     bool ExceptionListWidget::checkException( InternalSettingsPtr exception )
     {
 
-        while( exception->exceptionPattern().isEmpty() || !QRegExp( exception->exceptionPattern() ).isValid() )
+        while( exception->exceptionPattern().isEmpty() || !QRegularExpression( exception->exceptionPattern() ).isValid() )
         {
 
             QMessageBox::warning( this, i18n( "Warning - Breezeway Settings" ), i18n("Regular Expression syntax is incorrect") );

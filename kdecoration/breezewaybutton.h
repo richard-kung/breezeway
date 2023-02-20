@@ -2,32 +2,18 @@
 #define BREEZEWAY_BUTTONS_H
 
 /*
-* Copyright 2014  Martin Gräßlin <mgraesslin@kde.org>
-* Copyright 2014  Hugo Pereira Da Costa <hugo.pereira@free.fr>
-* Copyright 2019  Richard Kung <ranmak@gmail.com>
+* SPDX-FileCopyrightText: 2014 Martin Gräßlin <mgraesslin@kde.org>
+* SPDX-FileCopyrightText: 2014 Hugo Pereira Da Costa <hugo.pereira@free.fr>
 *
-* This program is free software; you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as
-* published by the Free Software Foundation; either version 2 of
-* the License or (at your option) version 3 or any later version
-* accepted by the membership of KDE e.V. (or its successor approved
-* by the membership of KDE e.V.), which shall act as a proxy
-* defined in Section 14 of version 3 of the license.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
 */
 #include <KDecoration2/DecorationButton>
 #include "breezewaydecoration.h"
 
 #include <QHash>
 #include <QImage>
-#include <QPropertyAnimation>
+
+class QVariantAnimation;
 
 namespace Breezeway
 {
@@ -35,9 +21,6 @@ namespace Breezeway
     class Button : public KDecoration2::DecorationButton
     {
         Q_OBJECT
-
-        //* declare active state opacity
-        Q_PROPERTY( qreal opacity READ opacity WRITE setOpacity )
 
         public:
 
@@ -59,7 +42,7 @@ namespace Breezeway
             FlagNone,
             FlagStandalone,
             FlagFirstInList,
-            FlagLastInList
+            FlagLastInList,
         };
 
         //* flag
@@ -124,7 +107,7 @@ namespace Breezeway
         Flag m_flag = FlagNone;
 
         //* active state change animation
-        QPropertyAnimation *m_animation;
+        QVariantAnimation *m_animation;
 
         //* vertical offset (for rendering)
         QPointF m_offset;
@@ -134,14 +117,6 @@ namespace Breezeway
 
         //* active state change opacity
         qreal m_opacity = 0;
-
-        //* colors
-        const QRgb colorClose = 0xFFF25056;
-        const QRgb colorMaximize = 0xFF13D13D;
-        const QRgb colorMinimize = 0xFFFCBE07;
-        const QRgb colorInactive = 0xFFC7C7C7;
-        const QRgb colorSymbol = 0xFF505050;
-        const QRgb colorOther = 0xFF4FBAF4;
     };
 
 } // namespace

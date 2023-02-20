@@ -1,17 +1,16 @@
 {
     "KPlugin": {
         "Description": "Breezeway window decoration",
-        "Description[zh_TW]": "Breezeway 視窗裝飾",
         "EnabledByDefault": true,
         "Id": "org.kde.breezeway",
         "Name": "Breezeway",
-        "Name[zh_TW]": "Breezeway",
         "ServiceTypes": [
             "org.kde.kdecoration2"
         ]
     },
     "org.kde.kdecoration2": {
         "blur": false,
-        "kcmodule": true
+        "kcmodule": true,
+        "recommendedBorderSize": "None"
     }
 }

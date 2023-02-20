@@ -2,25 +2,9 @@
 // breezewayexceptiondialog.cpp
 // -------------------
 //
-// Copyright (c) 2009 Hugo Pereira Da Costa <hugo.pereira@free.fr>
+// SPDX-FileCopyrightText: 2009 Hugo Pereira Da Costa <hugo.pereira@free.fr>
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-// IN THE SOFTWARE.
+// SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
 #include "breezewayexceptiondialog.h"
@@ -41,23 +25,23 @@ namespace Breezeway
 
         m_ui.setupUi( this );
 
-        connect( m_ui.buttonBox->button( QDialogButtonBox::Cancel ), SIGNAL(clicked()), this, SLOT(close()) );
+        connect( m_ui.buttonBox->button( QDialogButtonBox::Cancel ), &QAbstractButton::clicked, this, &QWidget::close );
 
         // store checkboxes from ui into list
         m_checkboxes.insert( BorderSize, m_ui.borderSizeCheckBox );
 
         // detect window properties
-        connect( m_ui.detectDialogButton, SIGNAL(clicked()), SLOT(selectWindowProperties()) );
+        connect( m_ui.detectDialogButton, &QAbstractButton::clicked, this, &ExceptionDialog::selectWindowProperties );
 
         // connections
         connect( m_ui.exceptionType, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
-        connect( m_ui.exceptionEditor, SIGNAL(textChanged(QString)), SLOT(updateChanged()) );
+        connect( m_ui.exceptionEditor, &QLineEdit::textChanged, this, &ExceptionDialog::updateChanged );
         connect( m_ui.borderSizeComboBox, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
 
         for( CheckBoxMap::iterator iter = m_checkboxes.begin(); iter != m_checkboxes.end(); ++iter )
-        { connect( iter.value(), SIGNAL(clicked()), SLOT(updateChanged()) ); }
+        { connect( iter.value(), &QAbstractButton::clicked, this, &ExceptionDialog::updateChanged ); }
 
-        connect( m_ui.hideTitleBar, SIGNAL(clicked()), SLOT(updateChanged()) );
+        connect( m_ui.hideTitleBar, &QAbstractButton::clicked, this, &ExceptionDialog::updateChanged );
 
         // hide detection dialog on non X11 platforms
         #if BREEZEWAY_HAVE_X11
@@ -140,7 +124,7 @@ namespace Breezeway
         if( !m_detectDialog )
         {
             m_detectDialog = new DetectDialog( this );
-            connect( m_detectDialog, SIGNAL(detectionDone(bool)), SLOT(readWindowProperties(bool)) );
+            connect( m_detectDialog, &DetectDialog::detectionDone, this, &ExceptionDialog::readWindowProperties );
         }
 
         m_detectDialog->detect(0);

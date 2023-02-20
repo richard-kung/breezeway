@@ -1,9 +1,6 @@
 ################# dependencies #################
 ### Qt/KDE
-find_package(Qt5 REQUIRED CONFIG COMPONENTS Widgets)
-
-################# configuration #################
-configure_file(config-breezewaycommon.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-breezewaycommon.h )
+find_package(Qt5 ${QT_MIN_VERSION} REQUIRED CONFIG COMPONENTS Widgets)
 
 ################# breezewaystyle target #################
 set(breezewaycommon_LIB_SRCS
@@ -18,11 +15,11 @@ generate_export_header(breezewaycommon5
 
 target_link_libraries(breezewaycommon5
     PUBLIC
-        Qt5::Core
-        Qt5::Gui)
+        Qt::Core
+        Qt::Gui)
 
 set_target_properties(breezewaycommon5 PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR})
 
-install(TARGETS breezewaycommon5 ${INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELINK_SKIP)
+install(TARGETS breezewaycommon5 ${KDE_INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELINK_SKIP)

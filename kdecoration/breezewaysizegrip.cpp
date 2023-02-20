@@ -1,21 +1,8 @@
-/*************************************************************************
- * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>    *
- *                                                                       *
- * This program is free software; you can redistribute it and/or modify  *
- * it under the terms of the GNU General Public License as published by  *
- * the Free Software Foundation; either version 2 of the License, or     *
- * (at your option) any later version.                                   *
- *                                                                       *
- * This program is distributed in the hope that it will be useful,       *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- * GNU General Public License for more details.                          *
- *                                                                       *
- * You should have received a copy of the GNU General Public License     *
- * along with this program; if not, write to the                         *
- * Free Software Foundation, Inc.,                                       *
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
- *************************************************************************/
+/*
+ * SPDX-FileCopyrightText: 2014 Hugo Pereira Da Costa <hugo.pereira@free.fr>
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ */
 
 
 #include "breezewaysizegrip.h"
@@ -62,10 +49,10 @@ namespace Breezeway
         updatePosition();
 
         // connections
-        auto c = decoration->client().data();
-        connect( c, &KDecoration2::DecoratedClient::widthChanged, this, &SizeGrip::updatePosition );
-        connect( c, &KDecoration2::DecoratedClient::heightChanged, this, &SizeGrip::updatePosition );
-        connect( c, &KDecoration2::DecoratedClient::activeChanged, this, &SizeGrip::updateActiveState );
+        const auto c = decoration->client().toStrongRef();
+        connect( c.data(), &KDecoration2::DecoratedClient::widthChanged, this, &SizeGrip::updatePosition );
+        connect( c.data(), &KDecoration2::DecoratedClient::heightChanged, this, &SizeGrip::updatePosition );
+        connect( c.data(), &KDecoration2::DecoratedClient::activeChanged, this, &SizeGrip::updateActiveState );
 
         // show
         show();
@@ -99,7 +86,7 @@ namespace Breezeway
         #if BREEZEWAY_HAVE_X11
 
         if( !QX11Info::isPlatformX11() ) return;
-        auto c = m_decoration.data()->client().data();
+        const auto c = m_decoration.data()->client().toStrongRef();
 
         xcb_window_t windowId = c->windowId();
         if( windowId )
@@ -162,11 +149,11 @@ namespace Breezeway
             case Qt::RightButton:
             {
                 hide();
-                QTimer::singleShot(5000, this, SLOT(show()));
+                QTimer::singleShot(5000, this, &QWidget::show);
                 break;
             }
 
-            case Qt::MidButton:
+            case Qt::MiddleButton:
             {
                 hide();
                 break;
@@ -191,7 +178,7 @@ namespace Breezeway
         #if BREEZEWAY_HAVE_X11
         if( !QX11Info::isPlatformX11() ) return;
 
-        auto c = m_decoration.data()->client().data();
+        const auto c = m_decoration.data()->client().toStrongRef();
         QPoint position(
             c->width() - GripSize - Offset,
             c->height() - GripSize - Offset );
@@ -213,7 +200,7 @@ namespace Breezeway
         auto connection( QX11Info::connection() );
 
         // client
-        auto c = m_decoration.data()->client().data();
+        const auto c = m_decoration.data()->client().toStrongRef();
 
         /*
         get root position matching position

@@ -4,3 +4,4 @@ NameSpace=Breezeway
 Singleton=false
 Mutators=true
 GlobalEnums=true
+Notifiers=OutlineCloseButton

@@ -1,30 +1,18 @@
 /*
- * Copyright 2014  Martin Gräßlin <mgraesslin@kde.org>
- * Copyright 2014  Hugo Pereira Da Costa <hugo.pereira@free.fr>
- * Copyright 2019  Richard Kung <ranmak@gmail.com>
+ * SPDX-FileCopyrightText: 2014 Martin Gräßlin <mgraesslin@kde.org>
+ * SPDX-FileCopyrightText: 2014 Hugo Pereira Da Costa <hugo.pereira@free.fr>
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License or (at your option) version 3 or any later version
- * accepted by the membership of KDE e.V. (or its successor approved
- * by the membership of KDE e.V.), which shall act as a proxy
- * defined in Section 14 of version 3 of the license.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
  */
 #include "breezewaybutton.h"
 
 #include <KDecoration2/DecoratedClient>
 #include <KColorUtils>
+#include <KIconLoader>
 
 #include <QPainter>
+#include <QVariantAnimation>
+#include <QPainterPath>
 
 namespace Breezeway
 {
@@ -37,15 +25,17 @@ namespace Breezeway
     //__________________________________________________________________
     Button::Button(DecorationButtonType type, Decoration* decoration, QObject* parent)
         : DecorationButton(type, decoration, parent)
-        , m_animation( new QPropertyAnimation( this ) )
+        , m_animation( new QVariantAnimation( this ) )
     {
 
         // setup animation
-        m_animation->setStartValue( 0 );
+        // It is important start and end value are of the same type, hence 0.0 and not just 0
+        m_animation->setStartValue( 0.0 );
         m_animation->setEndValue( 1.0 );
-        m_animation->setTargetObject( this );
-        m_animation->setPropertyName( "opacity" );
         m_animation->setEasingCurve( QEasingCurve::InOutQuad );
+        connect(m_animation, &QVariantAnimation::valueChanged, this, [this](const QVariant &value) {
+            setOpacity(value.toReal());
+        });
 
         // setup default geometry
         const int height = decoration->buttonHeight();
@@ -53,7 +43,7 @@ namespace Breezeway
         setIconSize(QSize( height, height ));
 
         // connections
-        connect(decoration->client().data(), SIGNAL(iconChanged(QIcon)), this, SLOT(update()));
+        connect(decoration->client().toStrongRef().data(), SIGNAL(iconChanged(QIcon)), this, SLOT(update()));
         connect(decoration->settings().data(), &KDecoration2::DecorationSettings::reconfigured, this, &Button::reconfigure);
         connect( this, &KDecoration2::DecorationButton::hoveredChanged, this, &Button::updateAnimationState );
 
@@ -77,36 +67,37 @@ namespace Breezeway
         if (auto d = qobject_cast<Decoration*>(decoration))
         {
             Button *b = new Button(type, d, parent);
+            const auto c = d->client().toStrongRef();
             switch( type )
             {
 
                 case DecorationButtonType::Close:
-                b->setVisible( d->client().data()->isCloseable() );
-                QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::closeableChanged, b, &Breezeway::Button::setVisible );
+                b->setVisible( c->isCloseable() );
+                QObject::connect(c.data(), &KDecoration2::DecoratedClient::closeableChanged, b, &Breezeway::Button::setVisible );
                 break;
 
                 case DecorationButtonType::Maximize:
-                b->setVisible( d->client().data()->isMaximizeable() );
-                QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::maximizeableChanged, b, &Breezeway::Button::setVisible );
+                b->setVisible( c->isMaximizeable() );
+                QObject::connect(c.data(), &KDecoration2::DecoratedClient::maximizeableChanged, b, &Breezeway::Button::setVisible );
                 break;
 
                 case DecorationButtonType::Minimize:
-                b->setVisible( d->client().data()->isMinimizeable() );
-                QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::minimizeableChanged, b, &Breezeway::Button::setVisible );
+                b->setVisible( c->isMinimizeable() );
+                QObject::connect(c.data(), &KDecoration2::DecoratedClient::minimizeableChanged, b, &Breezeway::Button::setVisible );
                 break;
 
                 case DecorationButtonType::ContextHelp:
-                b->setVisible( d->client().data()->providesContextHelp() );
-                QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::providesContextHelpChanged, b, &Breezeway::Button::setVisible );
+                b->setVisible( c->providesContextHelp() );
+                QObject::connect(c.data(), &KDecoration2::DecoratedClient::providesContextHelpChanged, b, &Breezeway::Button::setVisible );
                 break;
 
                 case DecorationButtonType::Shade:
-                b->setVisible( d->client().data()->isShadeable() );
-                QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::shadeableChanged, b, &Breezeway::Button::setVisible );
+                b->setVisible( c->isShadeable() );
+                QObject::connect(c.data(), &KDecoration2::DecoratedClient::shadeableChanged, b, &Breezeway::Button::setVisible );
                 break;
 
                 case DecorationButtonType::Menu:
-                QObject::connect(d->client().data(), &KDecoration2::DecoratedClient::iconChanged, b, [b]() { b->update(); });
+                QObject::connect(c.data(), &KDecoration2::DecoratedClient::iconChanged, b, [b]() { b->update(); });
                 break;
 
                 default: break;
@@ -133,15 +124,28 @@ namespace Breezeway
         if( m_flag == FlagFirstInList ) painter->translate( m_offset );
         else painter->translate( 0, m_offset.y() );
 
-        if( !m_iconSize.isValid() ) m_iconSize = geometry().size().toSize();
+        if( !m_iconSize.isValid() || isStandAlone() ) m_iconSize = geometry().size().toSize();
 
         // menu button
         if (type() == DecorationButtonType::Menu)
         {
 
             const QRectF iconRect( geometry().topLeft(), m_iconSize );
-            decoration()->client().data()->icon().paint(painter, iconRect.toRect());
-
+            const auto c = decoration()->client().toStrongRef();
+            if (auto deco =  qobject_cast<Decoration*>(decoration())) {
+                const QPalette activePalette = KIconLoader::global()->customPalette();
+                QPalette palette = c->palette();
+                palette.setColor(QPalette::WindowText, deco->fontColor());
+                KIconLoader::global()->setCustomPalette(palette);
+                c->icon().paint(painter, iconRect.toRect());
+                if (activePalette == QPalette()) {
+                    KIconLoader::global()->resetPalette();
+                }    else {
+                    KIconLoader::global()->setCustomPalette(palette);
+                }
+            } else {
+                c->icon().paint(painter, iconRect.toRect());
+            }
 
         } else {
 
@@ -175,10 +179,8 @@ namespace Breezeway
         if( backgroundColor.isValid() )
         {
             painter->setPen( Qt::NoPen );
-            painter->setBrush( backgroundColor.lighter(85) );
-            painter->drawEllipse( QRectF( 0, 0, 18, 18 ) );
             painter->setBrush( backgroundColor );
-            painter->drawEllipse( QRectF( 1, 1, 16, 16 ) );
+            painter->drawEllipse( QRectF( 0, 0, 18, 18 ) );
         }
 
         // render mark
@@ -190,17 +192,17 @@ namespace Breezeway
             QPen pen( foregroundColor );
             pen.setCapStyle( Qt::RoundCap );
             pen.setJoinStyle( Qt::MiterJoin );
-            pen.setWidthF( 1.3*qMax((qreal)1.0, 20/width ) );
+            pen.setWidthF( PenWidth::Symbol*qMax((qreal)1.0, 20/width ) );
 
             painter->setPen( pen );
-            painter->setBrush( foregroundColor );
+            painter->setBrush( Qt::NoBrush );
 
             switch( type() )
             {
 
                 case DecorationButtonType::Close:
                 {
-                    painter->drawLine( 5, 5, 13, 13 );
+                    painter->drawLine( QPointF( 5, 5 ), QPointF( 13, 13 ) );
                     painter->drawLine( 13, 5, 5, 13 );
                     break;
                 }
@@ -209,30 +211,30 @@ namespace Breezeway
                 {
                     if( isChecked() )
                     {
+                        pen.setJoinStyle( Qt::RoundJoin );
+                        painter->setPen( pen );
+
                         painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 11, 4 ),
-                            QPointF( 11, 7 ),
-                            QPointF( 14, 7 )} );
-                        painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 4, 11 ),
-                            QPointF( 7, 11 ),
-                            QPointF( 7, 14 )} );
+                            QPointF( 4, 9 ),
+                            QPointF( 9, 4 ),
+                            QPointF( 14, 9 ),
+                            QPointF( 9, 14 )} );
+
                     } else {
-                        painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 8, 5 ),
-                            QPointF( 13, 5 ),
-                            QPointF( 13, 10 )} );
-                        painter->drawPolygon( QVector<QPointF>{
-                            QPointF( 10, 13 ),
-                            QPointF( 5, 13 ),
-                            QPointF( 5, 8 )} );
+                        painter->drawPolyline( QVector<QPointF>{
+                            QPointF( 4, 11 ),
+                            QPointF( 9, 6 ),
+                            QPointF( 14, 11 )});
                     }
                     break;
                 }
 
                 case DecorationButtonType::Minimize:
                 {
-                    painter->drawLine( 4, 9, 14, 9 );
+                    painter->drawPolyline( QVector<QPointF>{
+                        QPointF( 4, 7 ),
+                        QPointF( 9, 12 ),
+                        QPointF( 14, 7 ) });
                     break;
                 }
 
@@ -368,40 +370,27 @@ namespace Breezeway
 
         } else if( isPressed() ) {
 
-            return QColor(colorSymbol);
+            return d->titleBarColor();
+
+        } else if( type() == DecorationButtonType::Close && d->internalSettings()->outlineCloseButton() ) {
+
+            return d->titleBarColor();
 
         } else if( ( type() == DecorationButtonType::KeepBelow || type() == DecorationButtonType::KeepAbove || type() == DecorationButtonType::Shade ) && isChecked() ) {
 
             return d->titleBarColor();
 
-        } else if( m_animation->state() == QPropertyAnimation::Running ) {
+        } else if( m_animation->state() == QAbstractAnimation::Running ) {
 
-            auto c = d->client().data();
-            if ( !c->isActive() ) {
-                QColor color(colorSymbol);
-                color.setAlpha(255*m_opacity);
-                return color;
-            }
-
-            QColor color;
-            if( type() == DecorationButtonType::Close ) {
-                color.setRgb(colorClose);
-            } else if( type() == DecorationButtonType::Maximize ) {
-                color.setRgb(colorMaximize);
-            } else if( type() == DecorationButtonType::Minimize ) {
-                color.setRgb(colorMinimize);
-            } else {
-                color.setRgb(colorOther);
-            }
-            return KColorUtils::mix( color, QColor(colorSymbol), m_opacity );
+            return KColorUtils::mix( d->fontColor(), d->titleBarColor(), m_opacity );
 
         } else if( isHovered() ) {
 
-            return QColor(colorSymbol);
+            return d->titleBarColor();
 
         } else {
 
-            return backgroundColor();
+            return d->fontColor();
 
         }
 
@@ -417,44 +406,55 @@ namespace Breezeway
 
         }
 
-        auto c = d->client().data();
+        auto c = d->client().toStrongRef();
+        QColor redColor( c->color( ColorGroup::Warning, ColorRole::Foreground ) );
+
         if( isPressed() ) {
 
-            QColor color;
-            if( type() == DecorationButtonType::Close ) {
-                color.setRgb(colorClose);
-            } else if( type() == DecorationButtonType::Maximize ) {
-                color.setRgb(colorMaximize);
-            } else if( type() == DecorationButtonType::Minimize ) {
-                color.setRgb(colorMinimize);
-            } else {
-                color.setRgb(colorOther);
-            }
-            return KColorUtils::mix( color, QColor(colorSymbol), 0.3 );
+            if( type() == DecorationButtonType::Close ) return redColor.darker();
+            else return KColorUtils::mix( d->titleBarColor(), d->fontColor(), 0.3 );
 
         } else if( ( type() == DecorationButtonType::KeepBelow || type() == DecorationButtonType::KeepAbove || type() == DecorationButtonType::Shade ) && isChecked() ) {
 
             return d->fontColor();
 
-        } else if ( !c->isActive() ) {
+        } else if( m_animation->state() == QAbstractAnimation::Running ) {
 
-            QColor color;
-            color.setRgb(colorInactive);
-            return color;
+            if( type() == DecorationButtonType::Close )
+            {
+                if( d->internalSettings()->outlineCloseButton() )
+                {
+
+                    return c->isActive() ? KColorUtils::mix( redColor, redColor.lighter(), m_opacity ) : KColorUtils::mix( redColor.lighter(), redColor, m_opacity );
+
+                } else {
+
+                    QColor color( redColor.lighter() );
+                    color.setAlpha( color.alpha()*m_opacity );
+                    return color;
+
+                }
+
+            } else {
+
+                QColor color( d->fontColor() );
+                color.setAlpha( color.alpha()*m_opacity );
+                return color;
+
+            }
+
+        } else if( isHovered() ) {
+
+            if( type() == DecorationButtonType::Close ) return c->isActive() ? redColor.lighter() : redColor;
+            else return d->fontColor();
+
+        } else if( type() == DecorationButtonType::Close && d->internalSettings()->outlineCloseButton() ) {
+
+            return c->isActive() ? redColor : d->fontColor();
 
         } else {
 
-            QColor color;
-            if( type() == DecorationButtonType::Close ) {
-                color.setRgb(colorClose);
-            } else if( type() == DecorationButtonType::Maximize ) {
-                color.setRgb(colorMaximize);
-            } else if( type() == DecorationButtonType::Minimize ) {
-                color.setRgb(colorMinimize);
-            } else {
-                color.setRgb(colorOther);
-            }
-            return color;
+            return QColor();
 
         }
 
@@ -466,7 +466,7 @@ namespace Breezeway
 
         // animation
         auto d = qobject_cast<Decoration*>(decoration());
-        if( d )  m_animation->setDuration( d->internalSettings()->animationsDuration() );
+        if( d )  m_animation->setDuration( d->animationsDuration() );
 
     }
 
@@ -475,10 +475,10 @@ namespace Breezeway
     {
 
         auto d = qobject_cast<Decoration*>(decoration());
-        if( !(d && d->internalSettings()->animationsEnabled() ) ) return;
+        if( !(d && d->animationsDuration() > 0 ) ) return;
 
-        m_animation->setDirection( hovered ? QPropertyAnimation::Forward : QPropertyAnimation::Backward );
-        if( m_animation->state() != QPropertyAnimation::Running ) m_animation->start();
+        m_animation->setDirection( hovered ? QAbstractAnimation::Forward : QAbstractAnimation::Backward );
+        if( m_animation->state() != QAbstractAnimation::Running ) m_animation->start();
 
     }
 

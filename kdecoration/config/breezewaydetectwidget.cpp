@@ -3,28 +3,12 @@
 // breezewaydetectwidget.cpp
 // Note: this class is a stripped down version of
 // /kdebase/workspace/kwin/kcmkwin/kwinrules/detectwidget.cpp
-// Copyright (c) 2004 Lubos Lunak <l.lunak@kde.org>
+// SPDX-FileCopyrightText: 2004 Lubos Lunak <l.lunak@kde.org>
 // -------------------
 //
-// Copyright (c) 2009 Hugo Pereira Da Costa <hugo.pereira@free.fr>
+// SPDX-FileCopyrightText: 2009 Hugo Pereira Da Costa <hugo.pereira@free.fr>
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-// IN THE SOFTWARE.
+// SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
 #include "breezewaydetectwidget.h"
@@ -52,7 +36,7 @@ namespace Breezeway
         // setup
         m_ui.setupUi( this );
 
-        connect( m_ui.buttonBox->button( QDialogButtonBox::Cancel ), SIGNAL(clicked()), this, SLOT(close()) );
+        connect( m_ui.buttonBox->button( QDialogButtonBox::Cancel ), &QAbstractButton::clicked, this, &QWidget::close );
         m_ui.windowClassCheckBox->setChecked( true );
 
 #if BREEZEWAY_HAVE_X11
@@ -127,7 +111,7 @@ namespace Breezeway
         if( o != m_grabber ) return false;
         if( e->type() != QEvent::MouseButtonRelease ) return false;
 
-        // need to explicitely release cursor for Qt5
+        // need to explicitly release cursor for Qt5
         qApp->restoreOverrideCursor();
 
         // delete old m_grabber

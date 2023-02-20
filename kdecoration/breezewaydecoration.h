@@ -2,24 +2,10 @@
 #define BREEZEWAY_DECORATION_H
 
 /*
- * Copyright 2014  Martin Gräßlin <mgraesslin@kde.org>
- * Copyright 2014  Hugo Pereira Da Costa <hugo.pereira@free.fr>
+ * SPDX-FileCopyrightText: 2014 Martin Gräßlin <mgraesslin@kde.org>
+ * SPDX-FileCopyrightText: 2014 Hugo Pereira Da Costa <hugo.pereira@free.fr>
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License or (at your option) version 3 or any later version
- * accepted by the membership of KDE e.V. (or its successor approved
- * by the membership of KDE e.V.), which shall act as a proxy
- * defined in Section 14 of version 3 of the license.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
  */
 
 #include "breezeway.h"
@@ -30,8 +16,10 @@
 #include <KDecoration2/DecorationSettings>
 
 #include <QPalette>
-#include <QPropertyAnimation>
 #include <QVariant>
+#include <QVariantAnimation>
+
+class QVariantAnimation;
 
 namespace KDecoration2
 {
@@ -45,9 +33,6 @@ namespace Breezeway
     class Decoration : public KDecoration2::Decoration
     {
         Q_OBJECT
-
-        //* declare active state opacity
-        Q_PROPERTY( qreal opacity READ opacity WRITE setOpacity )
 
         public:
 
@@ -63,6 +48,9 @@ namespace Breezeway
         //* internal settings
         InternalSettingsPtr internalSettings() const
         { return m_internalSettings; }
+
+        qreal animationsDuration() const
+        { return m_animation->duration();}
 
         //* caption height
         int captionHeight() const;
@@ -82,7 +70,6 @@ namespace Breezeway
         //*@name colors
         //@{
         QColor titleBarColor() const;
-        QColor outlineColor() const;
         QColor fontColor() const;
         //@}
 
@@ -119,8 +106,10 @@ namespace Breezeway
 
         void createButtons();
         void paintTitleBar(QPainter *painter, const QRect &repaintRegion);
-        void createShadow();
-
+        void updateShadow();
+        QSharedPointer<KDecoration2::DecorationShadow> createShadowObject( const float strengthScale );
+        void setScaledCornerRadius();
+        
         //*@name border size
         //@{
         int borderSize(bool bottom = false) const;
@@ -145,11 +134,16 @@ namespace Breezeway
         SizeGrip *m_sizeGrip = nullptr;
 
         //* active state change animation
-        QPropertyAnimation *m_animation;
+        QVariantAnimation *m_animation;
+        QVariantAnimation *m_shadowAnimation;
 
         //* active state change opacity
         qreal m_opacity = 0;
+        qreal m_shadowOpacity = 0;
 
+        
+        //*frame corner radius, scaled according to DPI
+        qreal m_scaledCornerRadius = 3;
     };
 
     bool Decoration::hasBorders() const
@@ -171,28 +165,40 @@ namespace Breezeway
     }
 
     bool Decoration::isMaximized() const
-    { return client().data()->isMaximized() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    { return client().toStrongRef()->isMaximized() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
 
     bool Decoration::isMaximizedHorizontally() const
-    { return client().data()->isMaximizedHorizontally() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    { return client().toStrongRef()->isMaximizedHorizontally() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
 
     bool Decoration::isMaximizedVertically() const
-    { return client().data()->isMaximizedVertically() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    { return client().toStrongRef()->isMaximizedVertically() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
 
     bool Decoration::isLeftEdge() const
-    { return (client().data()->isMaximizedHorizontally() || client().data()->adjacentScreenEdges().testFlag( Qt::LeftEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    {
+        const auto c = client().toStrongRef();
+        return (c->isMaximizedHorizontally() || c->adjacentScreenEdges().testFlag( Qt::LeftEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows();
+    }
 
     bool Decoration::isRightEdge() const
-    { return (client().data()->isMaximizedHorizontally() || client().data()->adjacentScreenEdges().testFlag( Qt::RightEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    {
+        const auto c = client().toStrongRef();
+        return (c->isMaximizedHorizontally() || c->adjacentScreenEdges().testFlag( Qt::RightEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows();
+    }
 
     bool Decoration::isTopEdge() const
-    { return (client().data()->isMaximizedVertically() || client().data()->adjacentScreenEdges().testFlag( Qt::TopEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    {
+        const auto c = client().toStrongRef();
+        return (c->isMaximizedVertically() || c->adjacentScreenEdges().testFlag( Qt::TopEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows();
+    }
 
     bool Decoration::isBottomEdge() const
-    { return (client().data()->isMaximizedVertically() || client().data()->adjacentScreenEdges().testFlag( Qt::BottomEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    {
+        const auto c = client().toStrongRef();
+        return (c->isMaximizedVertically() || c->adjacentScreenEdges().testFlag( Qt::BottomEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows();
+    }
 
     bool Decoration::hideTitleBar() const
-    { return m_internalSettings->hideTitleBar() && !client().data()->isShaded(); }
+    { return m_internalSettings->hideTitleBar() && !client().toStrongRef()->isShaded(); }
 
 }
 

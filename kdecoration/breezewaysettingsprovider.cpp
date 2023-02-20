@@ -1,21 +1,7 @@
 /*
- * Copyright 2014  Hugo Pereira Da Costa <hugo.pereira@free.fr>
+ * SPDX-FileCopyrightText: 2014 Hugo Pereira Da Costa <hugo.pereira@free.fr>
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License or (at your option) version 3 or any later version
- * accepted by the membership of KDE e.V. (or its successor approved
- * by the membership of KDE e.V.), which shall act as a proxy
- * defined in Section 14 of version 3 of the license.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
  */
 
 #include "breezewaysettingsprovider.h"
@@ -24,6 +10,7 @@
 
 #include <KWindowInfo>
 
+#include <QRegularExpression>
 #include <QTextStream>
 
 namespace Breezeway
@@ -75,7 +62,7 @@ namespace Breezeway
         QString className;
 
         // get the client
-        auto client = decoration->client().data();
+        const auto client = decoration->client().toStrongRef();
 
         foreach( auto internalSettings, m_exceptions )
         {
@@ -105,7 +92,7 @@ namespace Breezeway
                     if( className.isEmpty() )
                     {
                         // retrieve class name
-                        KWindowInfo info( client->windowId(), nullptr, NET::WM2WindowClass );
+                        KWindowInfo info( client->windowId(), {}, NET::WM2WindowClass );
                         QString window_className( QString::fromUtf8(info.windowClassName()) );
                         QString window_class( QString::fromUtf8(info.windowClassClass()) );
                         className = window_className + QStringLiteral(" ") + window_class;
@@ -118,7 +105,8 @@ namespace Breezeway
             }
 
             // check matching
-            if( QRegExp( internalSettings->exceptionPattern() ).indexIn( value ) >= 0 )
+            QRegularExpression rx( internalSettings->exceptionPattern() );
+            if( rx.match( value ).hasMatch() )
             { return internalSettings; }
 
         }
