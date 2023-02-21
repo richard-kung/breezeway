@@ -29,7 +29,7 @@ namespace Breezeway
         //* titlebar metrics, in units of small spacing
         static constexpr int TitleBar_TopMargin = 2;
         static constexpr int TitleBar_BottomMargin = 2;
-        static constexpr int TitleBar_SideMargin = 3;
+        static constexpr int TitleBar_SideMargin = 4;
         static constexpr int TitleBar_ButtonSpacing = 3;
 
         // shadow dimensions (pixels)
